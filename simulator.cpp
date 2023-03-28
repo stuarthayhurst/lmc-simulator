@@ -112,6 +112,10 @@ int main() {
  - Support reading from files
  - Computer implementation
  - Check operands are present before accessing
+
+ - Document the instructions
+ - Add examples
+ - Add self-tests
 */
 
 /* Valid forms:
