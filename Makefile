@@ -1,4 +1,4 @@
-CFLAGS += -Wall -Wextra -Werror -std=c11 -march=native -flto=auto
+CFLAGS += -Wall -Wextra -Werror -std=c++20 -march=native -flto=auto
 ifeq ($(FAST),true)
   CFLAGS += -Ofast
 else
@@ -9,8 +9,8 @@ ifeq ($(DEBUG),true)
   CFLAGS += -g
 endif
 
-simulator: simulator.c
-	$(CC) "$@.c" -o "$@" $(CFLAGS)
+simulator: simulator.cpp
+	$(CXX) "$@.cpp" -o "$@" $(CFLAGS)
 
 .PHONY: clean
 clean:
