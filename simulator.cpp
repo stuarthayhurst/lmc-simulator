@@ -29,7 +29,7 @@ std::string rawInput[] = {
   "HLT"
 };
 
-int assembleProgram(int memory[], std::string inputData[], int inputDataLength) {
+int assembleProgram(int memory[], int memoryLength, std::string inputData[], int inputDataLength) {
   //Create variable sized storage for tokens
   std::vector<std::vector<std::string>> codeVectors;
 
@@ -67,6 +67,12 @@ int assembleProgram(int memory[], std::string inputData[], int inputDataLength) 
 
   //Get the new size of the program, after splitting into vectors
   int programLength = codeVectors.size();
+
+  //Fail if memory won't be able to hold the program
+  if (programLength > memoryLength) {
+    std::cerr << "Memory is not large enough to store program" << std::endl;
+    return -1;
+  }
 
   //Save label addresses and remove
   std::map<std::string, int> labelIndexMap;
@@ -112,7 +118,7 @@ int main() {
   std::memset(&memory, 0, memoryLength * sizeof(int));
 
   int inputLength = sizeof(rawInput) / sizeof(rawInput[0]);
-  int programLength = assembleProgram(&memory[0], &rawInput[0], inputLength);
+  int programLength = assembleProgram(&memory[0], memoryLength, &rawInput[0], inputLength);
 
   if (programLength == -1) {
     return EXIT_FAILURE;
