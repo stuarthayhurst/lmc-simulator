@@ -201,6 +201,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
+  //TODO: debug, remove
   for (int i = 0; i < programLength; i++) {
     std::cout << memory[i] << std::endl;
   }
@@ -215,6 +216,9 @@ int main() {
     //Get opcode and operand
     int opcode = (memory[systemState.programCounter] / 100) * 100;
     int operand = memory[systemState.programCounter] - opcode;
+
+    //Increment the program counter
+    systemState.programCounter++;
 
     //Stop execution if told to halt
     if (opcode == 0) {
