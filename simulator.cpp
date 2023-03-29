@@ -101,6 +101,10 @@ int assembleProgram(int memory[], int memoryLength, std::string inputData[], int
     int opcode = mnemonicOpcodeMap[codeVector[0]];
     int operand = 0;
     if (opcode <= 900 and codeVector[0] != std::string("HLT")) {
+      if (codeVector.size() < 2) {
+        std::cerr << "Missing operand for instruction '" << codeVector[0] << "'" << std::endl;
+        return -1;
+      }
       operand = std::stoi(codeVector[1]);
     }
 
