@@ -90,6 +90,12 @@ int assembleProgram(int memory[], int memoryLength, std::string inputData[], int
   for (int i = 0; i < programLength; i++) {
     std::vector<std::string> codeVector = codeVectors[i];
 
+    //Skip any empty lines due to labels
+    int tokenCount = codeVector.size();
+    if (tokenCount == 0) {
+      continue;
+    }
+
     //Replace labels with addresses
     for (unsigned int tokenIndex = 0; tokenIndex < codeVector.size(); tokenIndex++) {
       if (labelIndexMap.contains(codeVector[tokenIndex])) {
@@ -101,7 +107,7 @@ int assembleProgram(int memory[], int memoryLength, std::string inputData[], int
     int opcode = mnemonicOpcodeMap[codeVector[0]];
     int operand = 0;
     if (opcode <= 900 and codeVector[0] != std::string("HLT")) {
-      if (codeVector.size() < 2) {
+      if (tokenCount < 2) {
         std::cerr << "Missing operand for instruction '" << codeVector[0] << "'" << std::endl;
         return -1;
       }
