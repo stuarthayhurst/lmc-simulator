@@ -29,32 +29,48 @@ std::string rawInput[] = {
   "HLT"
 };
 
-bool assembleProgram(int memory[], std::string inputData[], int inputDataLength) {
+int assembleProgram(int memory[], std::string inputData[], int inputDataLength) {
   //Create variable sized storage for tokens
-  std::vector<std::string> codeVectors[inputDataLength];
+  std::vector<std::vector<std::string>> codeVectors;
 
   //Split into code vectors
   for (int i = 0; i < inputDataLength; i++) {
+    std::vector<std::string> codeVector;
     std::string inputLine = inputData[i];
-    int stringLength = inputLine.size();
-    int tokenCount = 0;
-    codeVectors[i].push_back(std::string(""));
 
-    //Iterate over each letter in the line of code
+    int tokenIndex = -1;
+    bool lastCharacterWasSpace = true;
+
+    //Split the line of code into tokens
+    int stringLength = inputLine.size();
     for (int letterIndex = 0; letterIndex < stringLength; letterIndex++) {
-      //Create a new token on each space, otherwise add to the current token
+      //Create a new token on each character group
       if (inputLine[letterIndex] == ' ') {
-        tokenCount++;
-        codeVectors[i].push_back(std::string(""));
+        lastCharacterWasSpace = true;
       } else {
-        codeVectors[i][tokenCount] += inputLine[letterIndex];
+        if (lastCharacterWasSpace) {
+          tokenIndex++;
+          codeVector.push_back(std::string(""));
+          lastCharacterWasSpace = false;
+        }
+
+        //Add the character to the current token
+        codeVector[tokenIndex] += inputLine[letterIndex];
       }
+    }
+
+    //Add the line to the other vectors if it's not empty
+    if (tokenIndex != -1) {
+      codeVectors.push_back(codeVector);
     }
   }
 
+  //Get the new size of the program, after splitting into vectors
+  int programLength = codeVectors.size();
+
   //Save label addresses and remove
   std::map<std::string, int> labelIndexMap;
-  for (int i = 0; i < inputDataLength; i++) {
+  for (int i = 0; i < programLength; i++) {
     std::vector<std::string> codeVector = codeVectors[i];
 
     //Save label index and remove label
@@ -65,7 +81,7 @@ bool assembleProgram(int memory[], std::string inputData[], int inputDataLength)
   }
 
   //Convert opcodes, operands and labels into 'machine code'
-  for (int i = 0; i < inputDataLength; i++) {
+  for (int i = 0; i < programLength; i++) {
     std::vector<std::string> codeVector = codeVectors[i];
 
     //Replace labels with addresses
@@ -87,7 +103,7 @@ bool assembleProgram(int memory[], std::string inputData[], int inputDataLength)
     memory[i] = result;
   }
 
-  return true;
+  return programLength;
 }
 
 int main() {
@@ -95,10 +111,10 @@ int main() {
   int memory[memoryLength];
   std::memset(&memory, 0, memoryLength * sizeof(int));
 
-  int programLength = sizeof(rawInput) / sizeof(rawInput[0]);
-  bool success = assembleProgram(&memory[0], &rawInput[0], programLength);
+  int inputLength = sizeof(rawInput) / sizeof(rawInput[0]);
+  int programLength = assembleProgram(&memory[0], &rawInput[0], inputLength);
 
-  if (!success) {
+  if (programLength == -1) {
     return EXIT_FAILURE;
   }
 
@@ -115,9 +131,6 @@ int main() {
 }
 
 /* TODO:
- - Add different exit codes
- - Handle extra whitespace
- - Handle blank lines
  - Support reading from files
  - Computer implementation
  - Check operands are present before accessing
