@@ -19,16 +19,6 @@ std::map<std::string, int> mnemonicOpcodeMap = {
   {"OUT", 902}
 };
 
-//TODO - replace test program
-std::string rawInput[] = {
-  "num1 DAT 1",
-  "num2 DAT 2",
-  "LDA num2",
-  "ADD num1",
-  "OUT",
-  "HLT"
-};
-
 struct SystemState {
   int* memoryPtr;
   int memoryLength;
@@ -134,6 +124,71 @@ int assembleProgram(int memory[], int memoryLength, std::string inputData[], int
   return programLength;
 }
 
+//TODO: replace placeholder instructions
+namespace instructions {
+  void add(SystemState* systemState, int operand) {
+    std::cout << systemState->memoryLength << operand << std::endl;
+    return;
+  }
+
+  void subtract(SystemState* systemState, int operand) {
+    std::cout << systemState->memoryLength << operand << std::endl;
+    return;
+  }
+
+  void store(SystemState* systemState, int operand) {
+    std::cout << systemState->memoryLength << operand << std::endl;
+    return;
+  }
+
+  void load(SystemState* systemState, int operand) {
+    std::cout << systemState->memoryLength << operand << std::endl;
+    return;
+  }
+
+  void branchAlways(SystemState* systemState, int operand) {
+    std::cout << systemState->memoryLength << operand << std::endl;
+    return;
+  }
+
+  void branchZero(SystemState* systemState, int operand) {
+    std::cout << systemState->memoryLength << operand << std::endl;
+    return;
+  }
+
+  void branchPositive(SystemState* systemState, int operand) {
+    std::cout << systemState->memoryLength << operand << std::endl;
+    return;
+  }
+
+  void inputOutput(SystemState* systemState, int operand) {
+    std::cout << systemState->memoryLength << operand << std::endl;
+    return;
+  }
+}
+
+typedef void (*instructionPtrType)(SystemState*, int);
+std::map<int, instructionPtrType> opcodeFunctionMap = {
+  {100, instructions::add},
+  {200, instructions::subtract},
+  {300, instructions::store},
+  {500, instructions::load},
+  {600, instructions::branchAlways},
+  {700, instructions::branchZero},
+  {800, instructions::branchPositive},
+  {900, instructions::inputOutput}
+};
+
+//TODO - replace test program
+std::string rawInput[] = {
+  "LDA num2",
+  "ADD num1",
+  "OUT",
+  "HLT",
+  "num1 DAT 1",
+  "num2 DAT 2"
+};
+
 int main() {
   int memoryLength = 100;
   int memory[memoryLength];
@@ -150,28 +205,39 @@ int main() {
     std::cout << memory[i] << std::endl;
   }
 
+  //Setup simulator state
   SystemState systemState;
   systemState.memoryPtr = &memory[0];
   systemState.memoryLength = memoryLength;
 
+  //Run until encountering opcode 0 (HLT)
   while (true) {
-    int opcode = 0;
+    //Get opcode and operand
+    int opcode = (memory[systemState.programCounter] / 100) * 100;
+    int operand = memory[systemState.programCounter] - opcode;
+
+    //Stop execution if told to halt
     if (opcode == 0) {
       break;
     }
+
+    if (opcodeFunctionMap.contains(opcode)) {
+      instructionPtrType handler = opcodeFunctionMap[opcode];
+      handler(&systemState, operand);
+    } else {
+      std::cerr << "Unknown opcode '" << opcode << "'" << std::endl;
+      return EXIT_FAILURE;
+    }
+
   }
-
-  //Create computer data
-  //Start execution
-
 
   return EXIT_SUCCESS;
 }
 
 /* TODO:
  - Support reading from files
- - Computer implementation
- - Check operands are present before accessing
+ - Finish computer implementation
+ - Support comments
 
  - Document the instructions
  - Add examples
