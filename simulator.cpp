@@ -29,18 +29,13 @@ std::string rawInput[] = {
   "HLT"
 };
 
-int main() {
-  int memoryLength = 100;
-  int memory[memoryLength];
-  std::memset(&memory, 0, memoryLength * sizeof(int));
-
+void assembleProgram(int memory[], std::string inputData[], int inputDataLength) {
   //Create variable sized storage for tokens
-  int programLength = sizeof(rawInput) / sizeof(rawInput[0]);
-  std::vector<std::string> codeVectors[programLength];
+  std::vector<std::string> codeVectors[inputDataLength];
 
   //Split into code vectors
-  for (int i = 0; i < programLength; i++) {
-    std::string inputLine = rawInput[i];
+  for (int i = 0; i < inputDataLength; i++) {
+    std::string inputLine = inputData[i];
     int stringLength = inputLine.size();
     int tokenCount = 0;
     codeVectors[i].push_back(std::string(""));
@@ -59,7 +54,7 @@ int main() {
 
   //Save label addresses and remove
   std::map<std::string, int> labelIndexMap;
-  for (int i = 0; i < programLength; i++) {
+  for (int i = 0; i < inputDataLength; i++) {
     std::vector<std::string> codeVector = codeVectors[i];
 
     //Save label index and remove label
@@ -70,7 +65,7 @@ int main() {
   }
 
   //Convert opcodes, operands and labels into 'machine code'
-  for (int i = 0; i < programLength; i++) {
+  for (int i = 0; i < inputDataLength; i++) {
     std::vector<std::string> codeVector = codeVectors[i];
 
     //Replace labels with addresses
@@ -91,6 +86,15 @@ int main() {
     int result = opcode + operand;
     memory[i] = result;
   }
+}
+
+int main() {
+  int memoryLength = 100;
+  int memory[memoryLength];
+  std::memset(&memory, 0, memoryLength * sizeof(int));
+
+  int programLength = sizeof(rawInput) / sizeof(rawInput[0]);
+  assembleProgram(&memory[0], &rawInput[0], programLength);
 
 
   for (int i = 0; i < programLength; i++) {
