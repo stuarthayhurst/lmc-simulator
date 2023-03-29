@@ -29,7 +29,7 @@ std::string rawInput[] = {
   "HLT"
 };
 
-void assembleProgram(int memory[], std::string inputData[], int inputDataLength) {
+bool assembleProgram(int memory[], std::string inputData[], int inputDataLength) {
   //Create variable sized storage for tokens
   std::vector<std::string> codeVectors[inputDataLength];
 
@@ -86,6 +86,8 @@ void assembleProgram(int memory[], std::string inputData[], int inputDataLength)
     int result = opcode + operand;
     memory[i] = result;
   }
+
+  return true;
 }
 
 int main() {
@@ -94,8 +96,11 @@ int main() {
   std::memset(&memory, 0, memoryLength * sizeof(int));
 
   int programLength = sizeof(rawInput) / sizeof(rawInput[0]);
-  assembleProgram(&memory[0], &rawInput[0], programLength);
+  bool success = assembleProgram(&memory[0], &rawInput[0], programLength);
 
+  if (!success) {
+    return EXIT_FAILURE;
+  }
 
   for (int i = 0; i < programLength; i++) {
     std::cout << memory[i] << std::endl;
