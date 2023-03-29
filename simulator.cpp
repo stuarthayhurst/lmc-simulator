@@ -29,6 +29,13 @@ std::string rawInput[] = {
   "HLT"
 };
 
+struct SystemState {
+  int* memoryPtr;
+  int memoryLength;
+  int accumulator = 0;
+  int programCounter = 0;
+};
+
 int assembleProgram(int memory[], int memoryLength, std::string inputData[], int inputDataLength) {
   //Create variable sized storage for tokens
   std::vector<std::vector<std::string>> codeVectors;
@@ -143,6 +150,16 @@ int main() {
     std::cout << memory[i] << std::endl;
   }
 
+  SystemState systemState;
+  systemState.memoryPtr = &memory[0];
+  systemState.memoryLength = memoryLength;
+
+  while (true) {
+    int opcode = 0;
+    if (opcode == 0) {
+      break;
+    }
+  }
 
   //Create computer data
   //Start execution
