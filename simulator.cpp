@@ -124,46 +124,45 @@ int assembleProgram(int memory[], int memoryLength, std::string inputData[], int
   return programLength;
 }
 
-//TODO: replace placeholder instructions
 namespace instructions {
   void add(SystemState* systemState, int operand) {
-    std::cout << systemState->memoryLength << operand << std::endl;
-    return;
+    systemState->accumulator += (systemState->memoryPtr)[operand];
   }
 
   void subtract(SystemState* systemState, int operand) {
-    std::cout << systemState->memoryLength << operand << std::endl;
-    return;
+    systemState->accumulator -= (systemState->memoryPtr)[operand];
   }
 
   void store(SystemState* systemState, int operand) {
-    std::cout << systemState->memoryLength << operand << std::endl;
-    return;
+    (systemState->memoryPtr)[operand] = systemState->accumulator;
   }
 
   void load(SystemState* systemState, int operand) {
-    std::cout << systemState->memoryLength << operand << std::endl;
-    return;
+    systemState->accumulator = (systemState->memoryPtr)[operand];
   }
 
   void branchAlways(SystemState* systemState, int operand) {
-    std::cout << systemState->memoryLength << operand << std::endl;
-    return;
+    systemState->programCounter = operand;
   }
 
   void branchZero(SystemState* systemState, int operand) {
-    std::cout << systemState->memoryLength << operand << std::endl;
-    return;
+    if (systemState->accumulator == 0) {
+      systemState->programCounter = operand;
+    }
   }
 
   void branchPositive(SystemState* systemState, int operand) {
-    std::cout << systemState->memoryLength << operand << std::endl;
-    return;
+    if (systemState->accumulator > 0) {
+      systemState->programCounter = operand;
+    }
   }
 
   void inputOutput(SystemState* systemState, int operand) {
-    std::cout << systemState->memoryLength << operand << std::endl;
-    return;
+    if (operand == 1) { //Input
+      std::cin >> systemState->accumulator;
+    } else if (operand == 2) { //Output
+      std::cout << systemState->accumulator << std::endl;
+    }
   }
 }
 
@@ -179,10 +178,13 @@ std::map<int, instructionPtrType> opcodeFunctionMap = {
   {900, instructions::inputOutput}
 };
 
-//TODO - replace test program
 std::string rawInput[] = {
   "LDA num2",
   "ADD num1",
+  "OUT",
+  "STA num2",
+  "INP",
+  "ADD num2",
   "OUT",
   "HLT",
   "num1 DAT 1",
@@ -225,6 +227,7 @@ int main() {
       break;
     }
 
+    //Retreive and execute 'instruction'
     if (opcodeFunctionMap.contains(opcode)) {
       instructionPtrType handler = opcodeFunctionMap[opcode];
       handler(&systemState, operand);
@@ -232,7 +235,6 @@ int main() {
       std::cerr << "Unknown opcode '" << opcode << "'" << std::endl;
       return EXIT_FAILURE;
     }
-
   }
 
   return EXIT_SUCCESS;
@@ -242,7 +244,12 @@ int main() {
  - Support reading from files
  - Finish computer implementation
  - Support comments
+ - Check memory bounds in instructions
+ - Manually apply overflow and underflow for LMC memory limits
+ - Apply overflow and underflow to operand values when assembling
+ - Handle unknown opcode in i/o instruction
 
+ - Debug flag for machine code dump and system state dump
  - Document the instructions
  - Add examples
  - Add self-tests
