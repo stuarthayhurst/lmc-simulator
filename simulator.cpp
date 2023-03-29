@@ -103,6 +103,11 @@ int assembleProgram(int memory[], int memoryLength, std::string inputData[], int
       }
     }
 
+    if (!mnemonicOpcodeMap.contains(codeVector[0])) {
+      std::cerr << "Unrecognised instruction '" << codeVector[0] << "'" << std::endl;
+      return -1;
+    }
+
     //Convert mnemonic to an opcode, then retrieve the operand
     int opcode = mnemonicOpcodeMap[codeVector[0]];
     int operand = 0;
