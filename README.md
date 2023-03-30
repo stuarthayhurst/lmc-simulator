@@ -11,3 +11,5 @@
 
 ## Usage:
   - `./simulator [FILE]`
+  - Set `DEBUG="true"` as an environment variable, to enable debug output
+    - `DEBUG="true" ./simulator [FILE]`

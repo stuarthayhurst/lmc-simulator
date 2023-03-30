@@ -274,7 +274,6 @@ int main() {
  - Apply overflow and underflow to operand values when assembling
  - Handle unknown opcode in i/o instruction
 
- - Debug flag for machine code dump and system state dump
  - Document the instructions
  - Add examples
  - Add self-tests
