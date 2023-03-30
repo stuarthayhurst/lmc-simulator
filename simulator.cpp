@@ -6,6 +6,55 @@
 #include <vector>
 #include <map>
 
+struct SystemState {
+  int* memoryPtr;
+  int memoryLength;
+  int accumulator = 0;
+  int programCounter = 0;
+};
+
+namespace instructions {
+  void add(SystemState* systemState, int operand) {
+    systemState->accumulator += (systemState->memoryPtr)[operand];
+  }
+
+  void subtract(SystemState* systemState, int operand) {
+    systemState->accumulator -= (systemState->memoryPtr)[operand];
+  }
+
+  void store(SystemState* systemState, int operand) {
+    (systemState->memoryPtr)[operand] = systemState->accumulator;
+  }
+
+  void load(SystemState* systemState, int operand) {
+    systemState->accumulator = (systemState->memoryPtr)[operand];
+  }
+
+  void branchAlways(SystemState* systemState, int operand) {
+    systemState->programCounter = operand;
+  }
+
+  void branchZero(SystemState* systemState, int operand) {
+    if (systemState->accumulator == 0) {
+      systemState->programCounter = operand;
+    }
+  }
+
+  void branchPositive(SystemState* systemState, int operand) {
+    if (systemState->accumulator > 0) {
+      systemState->programCounter = operand;
+    }
+  }
+
+  void inputOutput(SystemState* systemState, int operand) {
+    if (operand == 1) { //Input
+      std::cin >> systemState->accumulator;
+    } else if (operand == 2) { //Output
+      std::cout << systemState->accumulator << std::endl;
+    }
+  }
+}
+
 std::map<std::string, int> mnemonicOpcodeMap = {
   {"DAT", 000},
   {"HLT", 000},
@@ -20,11 +69,16 @@ std::map<std::string, int> mnemonicOpcodeMap = {
   {"OUT", 902}
 };
 
-struct SystemState {
-  int* memoryPtr;
-  int memoryLength;
-  int accumulator = 0;
-  int programCounter = 0;
+typedef void (*instructionPtrType)(SystemState*, int);
+std::map<int, instructionPtrType> opcodeFunctionMap = {
+  {100, instructions::add},
+  {200, instructions::subtract},
+  {300, instructions::store},
+  {500, instructions::load},
+  {600, instructions::branchAlways},
+  {700, instructions::branchZero},
+  {800, instructions::branchPositive},
+  {900, instructions::inputOutput}
 };
 
 int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* inputData, int inputDataLength) {
@@ -132,60 +186,6 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
 
   return programLength;
 }
-
-namespace instructions {
-  void add(SystemState* systemState, int operand) {
-    systemState->accumulator += (systemState->memoryPtr)[operand];
-  }
-
-  void subtract(SystemState* systemState, int operand) {
-    systemState->accumulator -= (systemState->memoryPtr)[operand];
-  }
-
-  void store(SystemState* systemState, int operand) {
-    (systemState->memoryPtr)[operand] = systemState->accumulator;
-  }
-
-  void load(SystemState* systemState, int operand) {
-    systemState->accumulator = (systemState->memoryPtr)[operand];
-  }
-
-  void branchAlways(SystemState* systemState, int operand) {
-    systemState->programCounter = operand;
-  }
-
-  void branchZero(SystemState* systemState, int operand) {
-    if (systemState->accumulator == 0) {
-      systemState->programCounter = operand;
-    }
-  }
-
-  void branchPositive(SystemState* systemState, int operand) {
-    if (systemState->accumulator > 0) {
-      systemState->programCounter = operand;
-    }
-  }
-
-  void inputOutput(SystemState* systemState, int operand) {
-    if (operand == 1) { //Input
-      std::cin >> systemState->accumulator;
-    } else if (operand == 2) { //Output
-      std::cout << systemState->accumulator << std::endl;
-    }
-  }
-}
-
-typedef void (*instructionPtrType)(SystemState*, int);
-std::map<int, instructionPtrType> opcodeFunctionMap = {
-  {100, instructions::add},
-  {200, instructions::subtract},
-  {300, instructions::store},
-  {500, instructions::load},
-  {600, instructions::branchAlways},
-  {700, instructions::branchZero},
-  {800, instructions::branchPositive},
-  {900, instructions::inputOutput}
-};
 
 int main(int argc, char* argv[]) {
   int memoryLength = 100;
