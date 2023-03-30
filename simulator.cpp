@@ -219,9 +219,20 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  //TODO: debug, remove
-  for (int i = 0; i < programLength; i++) {
-    std::cout << memory[i] << std::endl;
+  //Check if debug mode is set
+  std::string debugKey;
+  if (std::getenv("DEBUG") == NULL) {
+    debugKey = std::string("false");
+  } else {
+    debugKey = std::getenv("DEBUG");
+  }
+
+  //Output 'machine code' if in debug mode
+  if (debugKey == std::string("true")) {
+    for (int i = 0; i < programLength; i++) {
+      std::cout << memory[i] << std::endl;
+    }
+    std::cout << std::endl;
   }
 
   //Setup simulator state
