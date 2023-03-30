@@ -51,6 +51,8 @@ namespace instructions {
       std::cin >> systemState->accumulator;
     } else if (operand == 2) { //Output
       std::cout << systemState->accumulator << std::endl;
+    } else {
+      std::cerr << "ERROR: Unknown opcode '" << 900 + operand << "'" << std::endl;
     }
   }
 }
@@ -276,7 +278,6 @@ int main(int argc, char* argv[]) {
  - Check memory bounds in instructions
  - Manually apply overflow and underflow for LMC memory limits
  - Apply overflow and underflow to operand values when assembling
- - Handle unknown opcode in i/o instruction
  - Check for unknown labels in the operand
 
  - Document the instructions
