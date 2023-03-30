@@ -146,13 +146,13 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
     std::vector<std::string> codeVector = codeVectors[i];
 
     //Skip any empty lines due to labels
-    int tokenCount = codeVector.size();
+    unsigned int tokenCount = codeVector.size();
     if (tokenCount == 0) {
       continue;
     }
 
     //Replace labels with addresses
-    for (unsigned int tokenIndex = 0; tokenIndex < codeVector.size(); tokenIndex++) {
+    for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; tokenIndex++) {
       if (labelIndexMap.contains(codeVector[tokenIndex])) {
         codeVector[tokenIndex] = std::to_string(labelIndexMap[codeVector[tokenIndex]]);
       }
