@@ -46,6 +46,9 @@ int assembleProgram(int memory[], int memoryLength, std::string inputData[], int
         lastCharacterWasSpace = true;
       } else {
         if (lastCharacterWasSpace) {
+          if (inputLine[letterIndex] == '#') {
+            break;
+          }
           tokenIndex++;
           codeVector.push_back(std::string(""));
           lastCharacterWasSpace = false;
@@ -179,6 +182,7 @@ std::map<int, instructionPtrType> opcodeFunctionMap = {
 };
 
 std::string rawInput[] = {
+  "#Multiply 2 inputs",
   "INP",
   "STA num1",
   "INP",
@@ -254,8 +258,6 @@ int main() {
 
 /* TODO:
  - Support reading from files
- - Finish computer implementation
- - Support comments
  - Check memory bounds in instructions
  - Manually apply overflow and underflow for LMC memory limits
  - Apply overflow and underflow to operand values when assembling
