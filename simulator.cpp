@@ -112,12 +112,17 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
     //Convert mnemonic to an opcode, then retrieve the operand
     int opcode = mnemonicOpcodeMap[codeVector[0]];
     int operand = 0;
-    if (opcode <= 900 and codeVector[0] != std::string("HLT")) {
+    //Skip operand for I/O and halt instructions
+    if (((opcode / 100) != 9) and (codeVector[0] != std::string("HLT"))) {
+      //Check the operand is present (optional for DAT)
       if (tokenCount < 2) {
-        std::cerr << "Missing operand for instruction '" << codeVector[0] << "'" << std::endl;
-        return -1;
+        if (codeVector[0] != std::string("DAT")) {
+          std::cerr << "Missing operand for instruction '" << codeVector[0] << "'" << std::endl;
+          return -1;
+        }
+      } else {
+        operand = std::stoi(codeVector[1]);
       }
-      operand = std::stoi(codeVector[1]);
     }
 
     //Save instruction to memory
