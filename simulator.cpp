@@ -278,19 +278,3 @@ int main() {
  - Add examples
  - Add self-tests
 */
-
-/* Valid forms:
-  label opcode
-  label opcode operand
-  label opcode label
-  opcode
-  opcode operand
-  opcode label
-*/
-
-//Variables for each register
-//Keep CPU data in a struct, passed to each instruction's function
-
-//Load instruction, incremement program counter (at the correct point), execute instruction
-//Helper to get an opcode from an instruction
-//Opcode to function pointer table
