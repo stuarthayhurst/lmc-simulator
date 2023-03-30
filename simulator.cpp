@@ -178,7 +178,12 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
           return -1;
         }
       } else {
-        operand = std::stoi(codeVector[1]);
+        try {
+          operand = std::stoi(codeVector[1]);
+        } catch (...) {
+          std::cerr << "ERROR: Undefined label '" << codeVector[1] << "'" << std::endl;
+          return -1;
+        }
       }
     }
 
@@ -278,7 +283,6 @@ int main(int argc, char* argv[]) {
  - Check memory bounds in instructions
  - Manually apply overflow and underflow for LMC memory limits
  - Apply overflow and underflow to operand values when assembling
- - Check for unknown labels in the operand
 
  - Document the instructions
  - Add examples
