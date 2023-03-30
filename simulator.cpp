@@ -2,6 +2,7 @@
 #include <cstring>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <map>
 
@@ -26,14 +27,14 @@ struct SystemState {
   int programCounter = 0;
 };
 
-int assembleProgram(int memory[], int memoryLength, std::string inputData[], int inputDataLength) {
+int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* inputData, int inputDataLength) {
   //Create variable sized storage for tokens
   std::vector<std::vector<std::string>> codeVectors;
 
   //Split into code vectors
   for (int i = 0; i < inputDataLength; i++) {
     std::vector<std::string> codeVector;
-    std::string inputLine = inputData[i];
+    std::string inputLine = (*inputData)[i];
 
     int tokenIndex = -1;
     bool lastCharacterWasSpace = true;
@@ -181,29 +182,7 @@ std::map<int, instructionPtrType> opcodeFunctionMap = {
   {900, instructions::inputOutput}
 };
 
-std::string rawInput[] = {
-  "#Multiply 2 inputs",
-  "INP",
-  "STA num1",
-  "INP",
-  "STA num2",
-  "loop LDA result",
-  "ADD num1",
-  "STA result",
-  "LDA num2",
-  "SUB one",
-  "STA num2",
-  "BRP loop",
-  "LDA result",
-  "OUT",
-  "HLT",
-  "one DAT 1",
-  "num1 DAT 0",
-  "num2 DAT 0",
-  "result DAT 0"
-};
-
-int main() {
+int main(int argc, char* argv[]) {
   int memoryLength = 100;
   int memory[memoryLength];
   std::memset(&memory, 0, memoryLength * sizeof(int));
@@ -212,8 +191,28 @@ int main() {
     std::cerr << "Memory set to non-standard value, behaviour may be altered" << std::endl;
   }
 
-  int inputLength = sizeof(rawInput) / sizeof(rawInput[0]);
-  int programLength = assembleProgram(&memory[0], memoryLength, &rawInput[0], inputLength);
+  std::string filePath;
+  if (argc >= 2) {
+    filePath = std::string(argv[1]);
+  } else {
+    std::cerr << "No input file specified" << std::endl;
+    return -1;
+  }
+
+  //Read assembly file in
+  std::vector<std::string> fileData;
+  std::string lineData;
+  std::ifstream input(filePath.c_str());
+  while (std::getline(input, lineData)) {
+    fileData.push_back(lineData);
+  }
+
+  int inputLength = fileData.size();
+  if (fileData.size() == 0) {
+    return -1;
+  }
+
+  int programLength = assembleProgram(&memory[0], memoryLength, &fileData, inputLength);
 
   if (programLength == -1) {
     return EXIT_FAILURE;
@@ -268,11 +267,11 @@ int main() {
 }
 
 /* TODO:
- - Support reading from files
  - Check memory bounds in instructions
  - Manually apply overflow and underflow for LMC memory limits
  - Apply overflow and underflow to operand values when assembling
  - Handle unknown opcode in i/o instruction
+ - Check for unknown labels in the operand
 
  - Document the instructions
  - Add examples
