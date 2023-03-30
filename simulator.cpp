@@ -125,7 +125,7 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
 
   //Fail if memory won't be able to hold the program
   if (programLength > memoryLength) {
-    std::cerr << "Memory is not large enough to store program (" << programLength << " > " << memoryLength << ")" << std::endl;
+    std::cerr << "ERROR: Memory is not large enough to store program (" << programLength << " > " << memoryLength << ")" << std::endl;
     return -1;
   }
 
@@ -160,7 +160,7 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
 
     //Check for unrecognised instructions
     if (!mnemonicOpcodeMap.contains(codeVector[0])) {
-      std::cerr << "Unrecognised instruction '" << codeVector[0] << "'" << std::endl;
+      std::cerr << "ERROR: Unrecognised instruction '" << codeVector[0] << "'" << std::endl;
       return -1;
     }
 
@@ -172,7 +172,7 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
       //Check the operand is present (optional for DAT)
       if (tokenCount < 2) {
         if (codeVector[0] != std::string("DAT")) {
-          std::cerr << "Missing operand for instruction '" << codeVector[0] << "'" << std::endl;
+          std::cerr << "ERROR: Missing operand for instruction '" << codeVector[0] << "'" << std::endl;
           return -1;
         }
       } else {
@@ -194,14 +194,14 @@ int main(int argc, char* argv[]) {
   std::memset(&memory, 0, memoryLength * sizeof(int));
 
   if (memoryLength != 100) {
-    std::cerr << "Memory set to non-standard value, behaviour may be altered" << std::endl;
+    std::cerr << "WARNING: Memory set to non-standard value, behaviour may be altered" << std::endl;
   }
 
   std::string filePath;
   if (argc >= 2) {
     filePath = std::string(argv[1]);
   } else {
-    std::cerr << "No input file specified" << std::endl;
+    std::cerr << "ERROR: No input file specified" << std::endl;
     return -1;
   }
 
@@ -264,7 +264,7 @@ int main(int argc, char* argv[]) {
       instructionPtrType handler = opcodeFunctionMap[opcode];
       handler(&systemState, operand);
     } else {
-      std::cerr << "Unknown opcode '" << opcode << "'" << std::endl;
+      std::cerr << "ERROR: Unknown opcode '" << opcode << "'" << std::endl;
       return EXIT_FAILURE;
     }
   }
