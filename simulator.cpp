@@ -125,7 +125,7 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
 
   //Fail if memory won't be able to hold the program
   if (programLength > memoryLength) {
-    std::cerr << "Memory is not large enough to store program" << std::endl;
+    std::cerr << "Memory is not large enough to store program (" << programLength << " > " << memoryLength << ")" << std::endl;
     return -1;
   }
 
@@ -158,6 +158,7 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
       }
     }
 
+    //Check for unrecognised instructions
     if (!mnemonicOpcodeMap.contains(codeVector[0])) {
       std::cerr << "Unrecognised instruction '" << codeVector[0] << "'" << std::endl;
       return -1;
