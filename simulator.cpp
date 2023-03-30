@@ -204,6 +204,10 @@ int main() {
   int memory[memoryLength];
   std::memset(&memory, 0, memoryLength * sizeof(int));
 
+  if (memoryLength != 100) {
+    std::cerr << "Memory set to non-standard value, behaviour may be altered" << std::endl;
+  }
+
   int inputLength = sizeof(rawInput) / sizeof(rawInput[0]);
   int programLength = assembleProgram(&memory[0], memoryLength, &rawInput[0], inputLength);
 
