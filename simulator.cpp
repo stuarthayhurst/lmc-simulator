@@ -324,9 +324,3 @@ int main(int argc, char* argv[]) {
 
   return EXIT_SUCCESS;
 }
-
-/* TODO:
- - Document the instructions
- - Add examples
- - Add self-tests
-*/
