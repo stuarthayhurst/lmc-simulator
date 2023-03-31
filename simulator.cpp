@@ -326,8 +326,6 @@ int main(int argc, char* argv[]) {
 }
 
 /* TODO:
- - Manually apply overflow and underflow for LMC memory limits
-
  - Document the instructions
  - Add examples
  - Add self-tests
