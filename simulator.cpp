@@ -184,6 +184,12 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
           std::cerr << "ERROR: Undefined label '" << codeVector[1] << "'" << std::endl;
           return -1;
         }
+
+        //Check operand is 3 digits or less
+        if (operand > 999 or operand < -999) {
+          std::cerr << "ERROR: Operand must be between 999 and -999" << std::endl;
+          return -1;
+        }
       }
     }
 
