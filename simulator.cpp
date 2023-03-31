@@ -234,6 +234,7 @@ int main(int argc, char* argv[]) {
   int programLength = assembleProgram(&memory[0], memoryLength, &fileData, inputLength);
 
   if (programLength == -1) {
+    std::cerr << "ERROR: Failed to assemble '" << filePath << "'" << std::endl;
     return EXIT_FAILURE;
   }
 
