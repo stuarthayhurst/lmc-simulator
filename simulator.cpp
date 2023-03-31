@@ -58,7 +58,7 @@ namespace instructions {
   }
 
   void branchPositive(SystemState* systemState, int operand) {
-    if (systemState->accumulator > 0) {
+    if (systemState->accumulator >= 0) {
       systemState->programCounter = operand;
     }
   }
