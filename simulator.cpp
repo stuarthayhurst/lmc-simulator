@@ -14,12 +14,29 @@ struct SystemState {
 };
 
 namespace instructions {
+  namespace {
+    int applyOverflow(int value) {
+      //If the value is above or below 999 or -999, wrap to other side of the interval
+      if (value > 999) {
+        value -= 999;
+        value = -999 + (value - 1);
+      } else if (value < -999) {
+        value += 999;
+        value = 999 + (value + 1);
+      }
+
+      return value;
+    }
+  }
+
   void add(SystemState* systemState, int operand) {
     systemState->accumulator += (systemState->memoryPtr)[operand];
+    systemState->accumulator = applyOverflow(systemState->accumulator);
   }
 
   void subtract(SystemState* systemState, int operand) {
     systemState->accumulator -= (systemState->memoryPtr)[operand];
+    systemState->accumulator = applyOverflow(systemState->accumulator);
   }
 
   void store(SystemState* systemState, int operand) {
