@@ -11,5 +11,16 @@
 
 ## Usage:
   - `./simulator [FILE]`
+   - For example, `./simulator programs/power.asm`
   - Set `DEBUG="true"` as an environment variable, to enable debug output
     - `DEBUG="true" ./simulator [FILE]`
+
+## Sample programs:
+  - Some sample programs are kept in `programs/`
+    - `multiply.asm`: Multiply 2 inputs together
+    - `power.asm`: Raise the first input to the power of the second
+
+## Contributing:
+  - Feel free to submit pull requests!
+  - Contributed code must fit the style of the codebase so far
+  - Sample assembly is also welcome, as long as it's under `programs/`
