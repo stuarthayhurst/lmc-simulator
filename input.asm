@@ -2,6 +2,7 @@
 INP
 STA num1
 INP
+SUB one
 STA num2
 loop LDA result
 ADD num1
