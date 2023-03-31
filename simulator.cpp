@@ -210,11 +210,16 @@ int checkMemoryAddress(SystemState* systemState, int address) {
 }
 
 int main(int argc, char* argv[]) {
-  int memoryLength = 100;
-  int memory[memoryLength];
-  std::memset(&memory, 0, memoryLength * sizeof(int));
+  //Setup initial simulator state
+  SystemState systemState;
+  systemState.memoryLength = 100;
 
-  if (memoryLength != 100) {
+  //Create simulator memory
+  int memory[systemState.memoryLength];
+  systemState.memoryPtr = &memory[0];
+  std::memset(&memory, 0, systemState.memoryLength * sizeof(int));
+
+  if (systemState.memoryLength != 100) {
     std::cerr << "WARNING: Memory set to non-standard value, behaviour may be altered" << std::endl;
   }
 
@@ -239,7 +244,7 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
-  int programLength = assembleProgram(&memory[0], memoryLength, &fileData, inputLength);
+  int programLength = assembleProgram(&memory[0], systemState.memoryLength, &fileData, inputLength);
 
   if (programLength == -1) {
     std::cerr << "ERROR: Failed to assemble '" << filePath << "'" << std::endl;
@@ -261,11 +266,6 @@ int main(int argc, char* argv[]) {
     }
     std::cout << std::endl;
   }
-
-  //Setup simulator state
-  SystemState systemState;
-  systemState.memoryPtr = &memory[0];
-  systemState.memoryLength = memoryLength;
 
   //Run until encountering opcode 0 (HLT)
   while (true) {
