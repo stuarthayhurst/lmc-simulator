@@ -201,6 +201,14 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
   return programLength;
 }
 
+int checkMemoryAddress(SystemState* systemState, int address) {
+  if (address >= systemState->memoryLength) {
+    std::cerr << "ERROR: Cannot access memory address '" << address << "'" << std::endl;
+    return -1;
+  }
+  return 0;
+}
+
 int main(int argc, char* argv[]) {
   int memoryLength = 100;
   int memory[memoryLength];
@@ -261,6 +269,11 @@ int main(int argc, char* argv[]) {
 
   //Run until encountering opcode 0 (HLT)
   while (true) {
+    //Check memory address is within bounds
+    if (checkMemoryAddress(&systemState, systemState.programCounter) == -1) {
+      return EXIT_FAILURE;
+    }
+
     //Get opcode and operand
     int opcode = (memory[systemState.programCounter] / 100) * 100;
     int operand = memory[systemState.programCounter] - opcode;
@@ -271,6 +284,14 @@ int main(int argc, char* argv[]) {
     //Stop execution if told to halt
     if (opcode == 0) {
       break;
+    }
+
+    //Check operand address is within bounds
+    if (checkMemoryAddress(&systemState, operand) == -1) {
+      //Exception for I/O instruction, as the operand is technically part of the instruction
+      if (operand / 100 != 9) {
+        return EXIT_FAILURE;
+      }
     }
 
     //Retreive and execute 'instruction'
@@ -287,9 +308,7 @@ int main(int argc, char* argv[]) {
 }
 
 /* TODO:
- - Check memory bounds in instructions
  - Manually apply overflow and underflow for LMC memory limits
- - Apply overflow and underflow to operand values when assembling
 
  - Document the instructions
  - Add examples
