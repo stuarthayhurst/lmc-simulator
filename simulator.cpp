@@ -90,9 +90,10 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
   //Split into code vectors
   for (int i = 0; i < inputDataLength; i++) {
     std::vector<std::string> codeVector;
+    codeVector.push_back(std::to_string(i + 1));
     std::string inputLine = (*inputData)[i];
 
-    int tokenIndex = -1;
+    int tokenIndex = 0;
     bool lastCharacterWasSpace = true;
 
     //Split the line of code into tokens
@@ -117,7 +118,7 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
     }
 
     //Add the line to the other vectors if it's not empty
-    if (tokenIndex != -1) {
+    if (tokenIndex != 0) {
       codeVectors.push_back(codeVector);
     }
   }
@@ -137,9 +138,9 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
     std::vector<std::string> codeVector = codeVectors[i];
 
     //Save label index and remove label
-    if (!mnemonicOpcodeMap.contains(codeVector[0])) {
-      labelIndexMap[codeVector[0]] = i;
-      codeVectors[i].erase(codeVectors[i].begin());
+    if (!mnemonicOpcodeMap.contains(codeVector[1])) {
+      labelIndexMap[codeVector[1]] = i;
+      codeVectors[i].erase(codeVectors[i].begin()++);
     }
   }
 
@@ -147,47 +148,47 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
   for (int i = 0; i < programLength; i++) {
     std::vector<std::string> codeVector = codeVectors[i];
 
-    //Skip any empty lines due to labels
+    //Skip any empty lines due to labels (line numbers will remain)
     unsigned int tokenCount = codeVector.size();
-    if (tokenCount == 0) {
+    if (tokenCount == 1) {
       continue;
     }
 
     //Replace labels with addresses
-    for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; tokenIndex++) {
+    for (unsigned int tokenIndex = 1; tokenIndex < tokenCount; tokenIndex++) {
       if (labelIndexMap.contains(codeVector[tokenIndex])) {
         codeVector[tokenIndex] = std::to_string(labelIndexMap[codeVector[tokenIndex]]);
       }
     }
 
     //Check for unrecognised instructions
-    if (!mnemonicOpcodeMap.contains(codeVector[0])) {
-      std::cerr << "ERROR: Unrecognised instruction '" << codeVector[0] << "'" << std::endl;
+    if (!mnemonicOpcodeMap.contains(codeVector[1])) {
+      std::cerr << "ERROR: Unrecognised instruction '" << codeVector[1] << "' on line " << codeVector[0] << std::endl;
       return -1;
     }
 
     //Convert mnemonic to an opcode, then retrieve the operand
-    int opcode = mnemonicOpcodeMap[codeVector[0]];
+    int opcode = mnemonicOpcodeMap[codeVector[1]];
     int operand = 0;
     //Skip operand for I/O and halt instructions
-    if (((opcode / 100) != 9) and (codeVector[0] != std::string("HLT"))) {
+    if (((opcode / 100) != 9) and (codeVector[1] != std::string("HLT"))) {
       //Check the operand is present (optional for DAT)
-      if (tokenCount < 2) {
-        if (codeVector[0] != std::string("DAT")) {
-          std::cerr << "ERROR: Missing operand for instruction '" << codeVector[0] << "'" << std::endl;
+      if (tokenCount < 3) {
+        if (codeVector[1] != std::string("DAT")) {
+          std::cerr << "ERROR: Missing operand for instruction '" << codeVector[1] << "' on line " << codeVector[0] << std::endl;
           return -1;
         }
       } else {
         try {
-          operand = std::stoi(codeVector[1]);
+          operand = std::stoi(codeVector[2]);
         } catch (...) {
-          std::cerr << "ERROR: Undefined label '" << codeVector[1] << "'" << std::endl;
+          std::cerr << "ERROR: Undefined label '" << codeVector[2] << "' on line " << codeVector[0] << std::endl;
           return -1;
         }
 
         //Check operand is 3 digits or less
         if (operand > 999 or operand < -999) {
-          std::cerr << "ERROR: Operand must be between 999 and -999" << std::endl;
+          std::cerr << "ERROR: Operand '" << operand << "' must be between 999 and -999 on line " << codeVector[0] << std::endl;
           return -1;
         }
       }
