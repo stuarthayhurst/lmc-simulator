@@ -5,7 +5,7 @@
   - A compiler supporting `c++-20`
   - Override the default by setting the `CXX` environment variable
 
-## Building;
+## Building:
   - `make`: Builds the simulator
   - `make clean`: Removes the compiled simulator, if present
 
