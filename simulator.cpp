@@ -246,7 +246,7 @@ int main(int argc, char* argv[]) {
     filePath = std::string(argv[1]);
   } else {
     std::cerr << "ERROR: No input file specified" << std::endl;
-    return -1;
+    return EXIT_FAILURE;
   }
 
   //Read assembly file in
@@ -259,7 +259,7 @@ int main(int argc, char* argv[]) {
 
   int inputLength = fileData.size();
   if (fileData.size() == 0) {
-    return -1;
+    return EXIT_FAILURE;
   }
 
   int programLength = assembleProgram(&memory[0], systemState.memoryLength, &fileData, inputLength);
