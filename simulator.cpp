@@ -29,48 +29,57 @@ namespace instructions {
     }
   }
 
-  void add(SystemState* systemState, int operand) {
+  int add(SystemState* systemState, int operand) {
     systemState->accumulator += (systemState->memoryPtr)[operand];
     systemState->accumulator = applyOverflow(systemState->accumulator);
+    return 0;
   }
 
-  void subtract(SystemState* systemState, int operand) {
+  int subtract(SystemState* systemState, int operand) {
     systemState->accumulator -= (systemState->memoryPtr)[operand];
     systemState->accumulator = applyOverflow(systemState->accumulator);
+    return 0;
   }
 
-  void store(SystemState* systemState, int operand) {
+  int store(SystemState* systemState, int operand) {
     (systemState->memoryPtr)[operand] = systemState->accumulator;
+    return 0;
   }
 
-  void load(SystemState* systemState, int operand) {
+  int load(SystemState* systemState, int operand) {
     systemState->accumulator = (systemState->memoryPtr)[operand];
+    return 0;
   }
 
-  void branchAlways(SystemState* systemState, int operand) {
+  int branchAlways(SystemState* systemState, int operand) {
     systemState->programCounter = operand;
+    return 0;
   }
 
-  void branchZero(SystemState* systemState, int operand) {
+  int branchZero(SystemState* systemState, int operand) {
     if (systemState->accumulator == 0) {
       systemState->programCounter = operand;
     }
+    return 0;
   }
 
-  void branchPositive(SystemState* systemState, int operand) {
+  int branchPositive(SystemState* systemState, int operand) {
     if (systemState->accumulator >= 0) {
       systemState->programCounter = operand;
     }
+    return 0;
   }
 
-  void inputOutput(SystemState* systemState, int operand) {
+  int inputOutput(SystemState* systemState, int operand) {
     if (operand == 1) { //Input
       std::cin >> systemState->accumulator;
     } else if (operand == 2) { //Output
       std::cout << systemState->accumulator << std::endl;
     } else {
       std::cerr << "ERROR: Unknown opcode '" << 900 + operand << "'" << std::endl;
+      return -1;
     }
+    return 0;
   }
 }
 
@@ -88,7 +97,7 @@ std::map<std::string, int> mnemonicOpcodeMap = {
   {"OUT", 902}
 };
 
-typedef void (*instructionPtrType)(SystemState*, int);
+typedef int (*instructionPtrType)(SystemState*, int);
 std::map<int, instructionPtrType> opcodeFunctionMap = {
   {100, instructions::add},
   {200, instructions::subtract},
@@ -316,7 +325,9 @@ int main(int argc, char* argv[]) {
     //Retreive and execute 'instruction'
     if (opcodeFunctionMap.contains(opcode)) {
       instructionPtrType handler = opcodeFunctionMap[opcode];
-      handler(&systemState, operand);
+      if (handler(&systemState, operand) == -1) {
+        return EXIT_FAILURE;
+      }
     } else {
       std::cerr << "ERROR: Unknown opcode '" << opcode << "'" << std::endl;
       return EXIT_FAILURE;
