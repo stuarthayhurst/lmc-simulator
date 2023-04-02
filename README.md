@@ -19,6 +19,7 @@
   - Some sample programs are kept in `programs/`
     - `multiply.asm`: Multiply 2 inputs together
     - `power.asm`: Raise the first input to the power of the second
+    - `fibonacci.asm`: Output the first `n` terms of the Fibonacci sequence
 
 ## Contributing:
   - Feel free to submit pull requests!
