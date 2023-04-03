@@ -20,6 +20,7 @@
     - `multiply.asm`: Multiply 2 inputs together
     - `power.asm`: Raise the first input to the power of the second
     - `fibonacci.asm`: Output the first `n` terms of the Fibonacci sequence
+    - `iteration.asm`: Iterate over a group of addresses
 
 ## Contributing:
   - Feel free to submit pull requests!
