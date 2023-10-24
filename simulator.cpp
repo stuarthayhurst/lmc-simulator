@@ -126,7 +126,7 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
     int stringLength = inputLine.size();
     for (int letterIndex = 0; letterIndex < stringLength; letterIndex++) {
       //Create a new token on each character group
-      if (inputLine[letterIndex] == ' ') {
+      if (inputLine[letterIndex] == ' ' || inputLine[letterIndex] == '\t') {
         lastCharacterWasSpace = true;
       } else {
         if (lastCharacterWasSpace) {
