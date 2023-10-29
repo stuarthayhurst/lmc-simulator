@@ -1,6 +1,7 @@
 INP
 STA input
 INP
+BRZ end
 SUB one
 STA power
 
@@ -28,7 +29,7 @@ loop      LDA result
           STA power
           BRP powerLoop
 
-          LDA result
+end       LDA result
           OUT
           HLT
 
