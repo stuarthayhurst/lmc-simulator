@@ -173,6 +173,7 @@ int main(int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
+  //Actually assemble the program, save the size
   int programLength = assembleProgram(memoryPtr, memoryLength, &fileData, inputLength);
 
   if (programLength == -1) {
@@ -189,8 +190,8 @@ int main(int argc, char* argv[]) {
     printMemory(programLength);
   }
 
-  bool success = true;
   //Run until encountering opcode 0 (HLT) or an error
+  bool success = true;
   while (executeNextInstruction(&success));
 
   //Clean up and exit
