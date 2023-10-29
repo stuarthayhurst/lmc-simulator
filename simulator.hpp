@@ -43,3 +43,11 @@ int* setupSimulator(int memoryLength) {
 void destroySimulator() {
   std::free(systemState.memoryPtr);
 }
+
+//Print n memory locations
+void printMemory(int size) {
+  for (int i = 0; i < size; i++) {
+    std::cout << systemState.memoryPtr[i] << std::endl;
+  }
+  std::cout << std::endl;
+}

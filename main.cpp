@@ -190,10 +190,7 @@ int main(int argc, char* argv[]) {
 
   //Output 'machine code' if in debug mode
   if (debugKey == std::string("true")) {
-    for (int i = 0; i < programLength; i++) {
-      std::cout << memoryPtr[i] << std::endl;
-    }
-    std::cout << std::endl;
+    printMemory(programLength);
   }
 
   //Run until encountering opcode 0 (HLT)
