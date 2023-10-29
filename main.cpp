@@ -180,16 +180,12 @@ int main(int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
-  //Check if debug mode is set
-  std::string debugKey;
-  if (std::getenv("DEBUG") == NULL) {
-    debugKey = std::string("false");
-  } else {
-    debugKey = std::getenv("DEBUG");
-  }
+  //Set debug mode from environment
+  bool debug = (std::getenv("DEBUG") != NULL) ?
+               (std::getenv("DEBUG") == std::string("true")) : false;
 
   //Output 'machine code' if in debug mode
-  if (debugKey == std::string("true")) {
+  if (debug) {
     printMemory(programLength);
   }
 
