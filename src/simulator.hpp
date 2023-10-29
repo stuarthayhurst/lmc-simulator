@@ -58,7 +58,8 @@ void printMemory(int size) {
 bool executeNextInstruction(bool* success) {
     //Check memory address is within bounds
     if (checkMemoryAddress(&systemState, systemState.programCounter) == -1) {
-      return EXIT_FAILURE;
+      *success = false;
+      return false;
     }
 
     //Get opcode and operand
