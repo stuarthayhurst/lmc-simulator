@@ -76,13 +76,11 @@ bool executeNextInstruction(bool* success) {
       return false;
     }
 
-    //Check operand address is within bounds
-    if (checkMemoryAddress(&systemState, operand) == -1) {
-      //Exception for I/O instruction, as the operand is technically part of the instruction
-      if (operand / 100 != 9) {
-        *success = true;
-        return false;
-      }
+    //Check operand address is within bounds (exception for I/O, as it's not an address)
+    if (opcode / 100 != 9 && checkMemoryAddress(&systemState, operand) == -1) {
+      std::cout << "B" << std::endl;
+      *success = true;
+      return false;
     }
 
     //Retreive and execute 'instruction'
