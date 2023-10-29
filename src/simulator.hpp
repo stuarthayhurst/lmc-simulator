@@ -62,8 +62,8 @@ bool executeNextInstruction(bool* success) {
     }
 
     //Get opcode and operand
-    int opcode = (systemState.memoryPtr[systemState.programCounter] / 100) * 100;
-    int operand = systemState.memoryPtr[systemState.programCounter] - opcode;
+    int operand = systemState.memoryPtr[systemState.programCounter] % 100;
+    int opcode = systemState.memoryPtr[systemState.programCounter] - operand;
 
     //Increment the program counter
     systemState.programCounter++;
