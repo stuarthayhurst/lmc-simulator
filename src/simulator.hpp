@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <cstring>
 
 #include "instructions.hpp"
 
@@ -30,6 +31,7 @@ namespace {
 int* setupSimulator(int memoryLength) {
   //Create simulator memory
   systemState.memoryPtr = (int*)std::malloc(memoryLength * sizeof(int));
+  std::memset(systemState.memoryPtr, 0, memoryLength * sizeof(int));
   systemState.memoryLength = memoryLength;
 
   //Warn on non-100 memory sizes
