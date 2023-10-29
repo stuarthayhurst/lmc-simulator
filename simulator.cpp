@@ -262,8 +262,13 @@ int main(int argc, char* argv[]) {
   std::vector<std::string> fileData;
   std::string lineData;
   std::ifstream input(filePath.c_str());
-  while (std::getline(input, lineData)) {
-    fileData.push_back(lineData);
+  if (input.is_open()) {
+    while (std::getline(input, lineData)) {
+      fileData.push_back(lineData);
+    }
+  } else {
+    std::cerr << "ERROR: Input file doesn't exist" << std::endl;
+    return EXIT_FAILURE;
   }
 
   int inputLength = fileData.size();
