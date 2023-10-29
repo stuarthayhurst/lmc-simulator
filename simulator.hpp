@@ -51,3 +51,49 @@ void printMemory(int size) {
   }
   std::cout << std::endl;
 }
+
+bool executeNextInstruction(bool* success) {
+    //Check memory address is within bounds
+    if (checkMemoryAddress(&systemState, systemState.programCounter) == -1) {
+      return EXIT_FAILURE;
+    }
+
+    //Get opcode and operand
+    int opcode = (systemState.memoryPtr[systemState.programCounter] / 100) * 100;
+    int operand = systemState.memoryPtr[systemState.programCounter] - opcode;
+
+    //Increment the program counter
+    systemState.programCounter++;
+
+    //Stop execution if told to halt
+    if (opcode == 0) {
+      //Success, program ended
+      *success = true;
+      return false;
+    }
+
+    //Check operand address is within bounds
+    if (checkMemoryAddress(&systemState, operand) == -1) {
+      //Exception for I/O instruction, as the operand is technically part of the instruction
+      if (operand / 100 != 9) {
+        *success = true;
+        return false;
+      }
+    }
+
+    //Retreive and execute 'instruction'
+    if (opcodeFunctionMap.contains(opcode)) {
+      instructionPtrType handler = opcodeFunctionMap[opcode];
+      if (handler(&systemState, operand) == -1) {
+        *success = false;
+        return false;
+      }
+    } else {
+      std::cerr << "ERROR: Unknown opcode '" << opcode << "'" << std::endl;
+      *success = false;
+      return false;
+    }
+
+  //Success, continue execution
+  return true;
+}

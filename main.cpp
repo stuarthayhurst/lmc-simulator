@@ -193,44 +193,11 @@ int main(int argc, char* argv[]) {
     printMemory(programLength);
   }
 
-  //Run until encountering opcode 0 (HLT)
-  while (true) {
-    //Check memory address is within bounds
-    if (checkMemoryAddress(&systemState, systemState.programCounter) == -1) {
-      return EXIT_FAILURE;
-    }
+  bool success = true;
+  //Run until encountering opcode 0 (HLT) or an error
+  while (executeNextInstruction(&success));
 
-    //Get opcode and operand
-    int opcode = (memoryPtr[systemState.programCounter] / 100) * 100;
-    int operand = memoryPtr[systemState.programCounter] - opcode;
-
-    //Increment the program counter
-    systemState.programCounter++;
-
-    //Stop execution if told to halt
-    if (opcode == 0) {
-      break;
-    }
-
-    //Check operand address is within bounds
-    if (checkMemoryAddress(&systemState, operand) == -1) {
-      //Exception for I/O instruction, as the operand is technically part of the instruction
-      if (operand / 100 != 9) {
-        return EXIT_FAILURE;
-      }
-    }
-
-    //Retreive and execute 'instruction'
-    if (opcodeFunctionMap.contains(opcode)) {
-      instructionPtrType handler = opcodeFunctionMap[opcode];
-      if (handler(&systemState, operand) == -1) {
-        return EXIT_FAILURE;
-      }
-    } else {
-      std::cerr << "ERROR: Unknown opcode '" << opcode << "'" << std::endl;
-      return EXIT_FAILURE;
-    }
-  }
-
-  return EXIT_SUCCESS;
+  //Clean up and exit
+  destroySimulator();
+  return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
