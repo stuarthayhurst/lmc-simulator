@@ -8,8 +8,13 @@
 #include "simulator.hpp"
 
 int main(int argc, char* argv[]) {
-  //Setup simulator with 100 memory locations
+  //Default to 100 memory addresses, allow overriding memory size
   int memoryLength = 100;
+  if (argc >= 3) {
+    memoryLength = std::strtol(argv[2], nullptr, 10);
+  }
+
+  //Setup simulator with configured number of memory addresses
   int* memoryPtr = setupSimulator(memoryLength);
 
   std::string filePath;
