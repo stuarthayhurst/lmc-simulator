@@ -12,8 +12,9 @@
   - `FAST=[true/false]`: Environment variable to enable more optimisation flags
 
 ## Usage:
-  - `./simulator [FILE]`
+  - `./simulator [FILE] [MEMORY SIZE]`
    - For example, `./simulator programs/power.asm`
+   - Or to limit the memory size to 50, `./simulator programs/power.asm 50`
   - Set `DEBUG="true"` as an environment variable, to enable debug output
     - `DEBUG="true" ./simulator [FILE]`
 
