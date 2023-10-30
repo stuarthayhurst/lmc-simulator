@@ -77,7 +77,7 @@ bool executeNextInstruction(bool* success) {
     }
 
     //Check operand address is within bounds (exception for I/O, as it's not an address)
-    if (opcode / 100 != 9 && checkMemoryAddress(&systemState, operand) == -1) {
+    if (opcode != 900 && checkMemoryAddress(&systemState, operand) == -1) {
       std::cout << "B" << std::endl;
       *success = true;
       return false;
