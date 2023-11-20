@@ -32,6 +32,10 @@ namespace {
 int* setupSimulator(int memoryLength) {
   //Create simulator memory
   systemState.memoryPtr = (int*)std::malloc(memoryLength * sizeof(int));
+  if (systemState.memoryPtr == nullptr) {
+    return nullptr;
+  }
+
   std::memset(systemState.memoryPtr, 0, memoryLength * sizeof(int));
   systemState.memoryLength = memoryLength;
 

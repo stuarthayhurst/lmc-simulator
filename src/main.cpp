@@ -16,6 +16,10 @@ int main(int argc, char* argv[]) {
 
   //Setup simulator with configured number of memory addresses
   int* memoryPtr = setupSimulator(memoryLength);
+  if (memoryPtr == nullptr) {
+    std::cerr << "ERROR: Failed to allocate memory" << std::endl;
+    return EXIT_FAILURE;
+  }
 
   std::string filePath;
   if (argc >= 2) {
