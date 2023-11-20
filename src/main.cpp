@@ -22,6 +22,7 @@ int main(int argc, char* argv[]) {
     filePath = std::string(argv[1]);
   } else {
     std::cerr << "ERROR: No input file specified" << std::endl;
+    destroySimulator();
     return EXIT_FAILURE;
   }
 
@@ -35,12 +36,14 @@ int main(int argc, char* argv[]) {
     }
   } else {
     std::cerr << "ERROR: Input file doesn't exist" << std::endl;
+    destroySimulator();
     return EXIT_FAILURE;
   }
 
   int inputLength = fileData.size();
   if (fileData.size() == 0) {
     std::cerr << "ERROR: Input file specified is empty" << std::endl;
+    destroySimulator();
     return EXIT_FAILURE;
   }
 
@@ -49,6 +52,7 @@ int main(int argc, char* argv[]) {
 
   if (programLength == -1) {
     std::cerr << "ERROR: Failed to assemble '" << filePath << "'" << std::endl;
+    destroySimulator();
     return EXIT_FAILURE;
   }
 
