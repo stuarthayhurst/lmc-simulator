@@ -38,6 +38,7 @@ int main(int argc, char* argv[]) {
     while (std::getline(input, lineData)) {
       fileData.push_back(lineData);
     }
+    input.close();
   } else {
     std::cerr << "ERROR: Input file doesn't exist" << std::endl;
     destroySimulator();
