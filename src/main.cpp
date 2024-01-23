@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
   }
 
   int inputLength = fileData.size();
-  if (fileData.size() == 0) {
+  if (inputLength == 0) {
     std::cerr << "ERROR: Input file specified is empty" << std::endl;
     destroySimulator();
     return EXIT_FAILURE;
