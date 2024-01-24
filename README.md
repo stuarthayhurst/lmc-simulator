@@ -13,8 +13,8 @@
 
 ## Usage:
   - `./simulator [FILE] [MEMORY SIZE]`
-   - For example, `./simulator programs/power.asm`
-   - Or to limit the memory size to 50, `./simulator programs/power.asm 50`
+    - For example, `./simulator programs/power.asm`
+    - Or to limit the memory size to 50, `./simulator programs/power.asm 50`
   - Set `DEBUG="true"` as an environment variable, to enable debug output
     - `DEBUG="true" ./simulator [FILE]`
 
