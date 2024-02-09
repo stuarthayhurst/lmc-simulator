@@ -30,6 +30,13 @@ int main(int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
+  if (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
+    std::cout << "Usage: simulator [FILE] [MEMORY SIZE]" << std::endl;
+    std::cout << " - [MEMORY SIZE] is optional" << std::endl;
+    destroySimulator();
+    return EXIT_SUCCESS;
+  }
+
   //Read assembly file in
   std::vector<std::string> fileData;
   std::string lineData;
