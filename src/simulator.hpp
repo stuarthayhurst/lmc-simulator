@@ -59,10 +59,11 @@ void printMemory(int size) {
   std::cout << std::endl;
 }
 
-bool executeNextInstruction(bool* success) {
+bool executeNextInstruction(bool* finished) {
     //Check memory address is within bounds
     if (checkMemoryAddress(&systemState, systemState.programCounter) == -1) {
-      *success = false;
+      //Invalid address, end program early
+      *finished = false;
       return false;
     }
 
@@ -76,13 +77,14 @@ bool executeNextInstruction(bool* success) {
     //Stop execution if told to halt
     if (opcode == 0) {
       //Success, program ended
-      *success = true;
-      return false;
+      *finished = true;
+      return true;
     }
 
     //Check operand address is within bounds (exception for I/O, as it's not an address)
     if (opcode != 900 && checkMemoryAddress(&systemState, operand) == -1) {
-      *success = true;
+      //Invalid address, end program early
+      *finished = false;
       return false;
     }
 
@@ -90,15 +92,18 @@ bool executeNextInstruction(bool* success) {
     if (opcodeFunctionMap.contains(opcode)) {
       instructionPtrType handler = opcodeFunctionMap[opcode];
       if (handler(&systemState, operand) == -1) {
-        *success = false;
+        //Failed to execute, end program early
+        *finished = false;
         return false;
       }
     } else {
+      //Failed to execute, end program early
       std::cerr << "ERROR: Unknown opcode '" << opcode << "'" << std::endl;
-      *success = false;
+      *finished = false;
       return false;
     }
 
   //Success, continue execution
+  *finished = false;
   return true;
 }

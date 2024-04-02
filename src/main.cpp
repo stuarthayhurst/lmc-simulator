@@ -78,8 +78,10 @@ int main(int argc, char* argv[]) {
   }
 
   //Run until encountering opcode 0 (HLT) or an error
-  bool success = true;
-  while (executeNextInstruction(&success));
+  bool success = true, finished = false;
+  while (success && !finished) {
+    success = executeNextInstruction(&finished);
+  }
 
   //Clean up and exit
   destroySimulator();
