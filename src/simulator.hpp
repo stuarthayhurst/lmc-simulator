@@ -1,20 +1,7 @@
-#include <cstdlib>
-#include <cstring>
 #include <iostream>
 
-#include "instructions.hpp"
-
-typedef int (*instructionPtrType)(SystemState*, int);
-std::map<int, instructionPtrType> opcodeFunctionMap = {
-  {100, instructions::add},
-  {200, instructions::subtract},
-  {300, instructions::store},
-  {500, instructions::load},
-  {600, instructions::branchAlways},
-  {700, instructions::branchZero},
-  {800, instructions::branchPositive},
-  {900, instructions::inputOutput}
-};
+#include "common/state.hpp"
+#include "common/instructions.hpp"
 
 namespace {
   int checkMemoryAddress(SystemState* systemState, int address) {
@@ -24,55 +11,61 @@ namespace {
     }
     return 0;
   }
-
-  //Empty system state
-  SystemState systemState;
 }
 
-int* setupSimulator(int memoryLength) {
-  //Create simulator memory
-  systemState.memoryPtr = (int*)std::malloc(memoryLength * sizeof(int));
-  if (systemState.memoryPtr == nullptr) {
+SystemState* createSimulator(int memoryLength) {
+  //Create simulator
+  SystemState* systemState = new (std::nothrow) SystemState;
+  if (systemState == nullptr) {
     return nullptr;
   }
 
-  std::memset(systemState.memoryPtr, 0, memoryLength * sizeof(int));
-  systemState.memoryLength = memoryLength;
+  //Initialise system state values
+  systemState->accumulator = 0;
+  systemState->programCounter = 0;
+  systemState->memoryLength = memoryLength;
+
+  //Create simulator memory
+  systemState->memoryPtr = new (std::nothrow) int[systemState->memoryLength]{0};
+  if (systemState->memoryPtr == nullptr) {
+    return nullptr;
+  }
 
   //Warn on non-100 memory sizes
-  if (systemState.memoryLength != 100) {
+  if (systemState->memoryLength != 100) {
     std::cerr << "WARNING: Memory set to non-standard value, behaviour may be altered" << std::endl;
   }
 
-  return systemState.memoryPtr;
+  return systemState;
 }
 
-void destroySimulator() {
-  std::free(systemState.memoryPtr);
+void destroySimulator(SystemState* systemState) {
+  delete [] systemState->memoryPtr;
+  delete systemState;
 }
 
 //Print n memory locations
-void printMemory(int size) {
+void printMemory(SystemState* systemState, int size) {
   for (int i = 0; i < size; i++) {
-    std::cout << systemState.memoryPtr[i] << std::endl;
+    std::cout << systemState->memoryPtr[i] << std::endl;
   }
   std::cout << std::endl;
 }
 
-bool executeNextInstruction(bool* finished) {
+bool executeNextInstruction(SystemState* systemState, bool* finished) {
     //Check memory address is within bounds
-    if (checkMemoryAddress(&systemState, systemState.programCounter) == -1) {
+    if (checkMemoryAddress(systemState, systemState->programCounter) == -1) {
       //Invalid address, end program early
       *finished = false;
       return false;
     }
 
     //Get opcode and operand
-    int operand = systemState.memoryPtr[systemState.programCounter] % 100;
-    int opcode = systemState.memoryPtr[systemState.programCounter] - operand;
+    int operand = systemState->memoryPtr[systemState->programCounter] % 100;
+    int opcode = systemState->memoryPtr[systemState->programCounter] - operand;
 
     //Increment the program counter
-    systemState.programCounter++;
+    systemState->programCounter++;
 
     //Stop execution if told to halt
     if (opcode == 0) {
@@ -82,16 +75,16 @@ bool executeNextInstruction(bool* finished) {
     }
 
     //Check operand address is within bounds (exception for I/O, as it's not an address)
-    if (opcode != 900 && checkMemoryAddress(&systemState, operand) == -1) {
+    if (opcode != 900 && checkMemoryAddress(systemState, operand) == -1) {
       //Invalid address, end program early
       *finished = false;
       return false;
     }
 
     //Retreive and execute 'instruction'
-    if (opcodeFunctionMap.contains(opcode)) {
-      instructionPtrType handler = opcodeFunctionMap[opcode];
-      if (handler(&systemState, operand) == -1) {
+    if (instructions::opcodeHandlerMap.contains(opcode)) {
+      instructions::InstructionHandler handler = instructions::opcodeHandlerMap[opcode];
+      if (handler(systemState, operand) == -1) {
         //Failed to execute, end program early
         *finished = false;
         return false;

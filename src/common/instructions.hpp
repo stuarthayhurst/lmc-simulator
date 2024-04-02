@@ -1,11 +1,9 @@
+#ifndef INSTRUCTIONS
+#define INSTRUCTIONS
+
 #include <iostream>
 
-struct SystemState {
-  int* memoryPtr;
-  int memoryLength;
-  int accumulator = 0;
-  int programCounter = 0;
-};
+#include "state.hpp"
 
 namespace instructions {
   namespace {
@@ -76,3 +74,33 @@ namespace instructions {
     return 0;
   }
 }
+
+namespace instructions {
+  typedef int (*InstructionHandler)(SystemState*, int);
+  std::map<int, InstructionHandler> opcodeHandlerMap = {
+    {100, instructions::add},
+    {200, instructions::subtract},
+    {300, instructions::store},
+    {500, instructions::load},
+    {600, instructions::branchAlways},
+    {700, instructions::branchZero},
+    {800, instructions::branchPositive},
+    {900, instructions::inputOutput}
+  };
+
+  std::map<std::string, int> mnemonicOpcodeMap = {
+    {"DAT", 000},
+    {"HLT", 000},
+    {"ADD", 100},
+    {"SUB", 200},
+    {"STA", 300},
+    {"LDA", 500},
+    {"BRA", 600},
+    {"BRZ", 700},
+    {"BRP", 800},
+    {"INP", 901},
+    {"OUT", 902}
+  };
+}
+
+#endif

@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+#include "common/state.hpp"
 #include "assembler.hpp"
 #include "simulator.hpp"
 
@@ -15,9 +16,9 @@ int main(int argc, char* argv[]) {
   }
 
   //Setup simulator with configured number of memory addresses
-  int* memoryPtr = setupSimulator(memoryLength);
-  if (memoryPtr == nullptr) {
-    std::cerr << "ERROR: Failed to allocate memory" << std::endl;
+  SystemState* systemStatePtr = createSimulator(memoryLength);
+  if (systemStatePtr == nullptr) {
+    std::cerr << "ERROR: Failed to create simulator" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -26,14 +27,14 @@ int main(int argc, char* argv[]) {
     filePath = std::string(argv[1]);
   } else {
     std::cerr << "ERROR: No input file specified" << std::endl;
-    destroySimulator();
+    destroySimulator(systemStatePtr);
     return EXIT_FAILURE;
   }
 
   if (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
     std::cout << "Usage: simulator [FILE] [MEMORY SIZE]" << std::endl;
     std::cout << " - [MEMORY SIZE] is optional" << std::endl;
-    destroySimulator();
+    destroySimulator(systemStatePtr);
     return EXIT_SUCCESS;
   }
 
@@ -48,23 +49,23 @@ int main(int argc, char* argv[]) {
     input.close();
   } else {
     std::cerr << "ERROR: Input file doesn't exist" << std::endl;
-    destroySimulator();
+    destroySimulator(systemStatePtr);
     return EXIT_FAILURE;
   }
 
   int inputLength = fileData.size();
   if (inputLength == 0) {
     std::cerr << "ERROR: Input file specified is empty" << std::endl;
-    destroySimulator();
+    destroySimulator(systemStatePtr);
     return EXIT_FAILURE;
   }
 
   //Actually assemble the program, save the size
-  int programLength = assembleProgram(memoryPtr, memoryLength, &fileData, inputLength);
+  int programLength = assembleProgram(systemStatePtr, &fileData, inputLength);
 
   if (programLength == -1) {
     std::cerr << "ERROR: Failed to assemble '" << filePath << "'" << std::endl;
-    destroySimulator();
+    destroySimulator(systemStatePtr);
     return EXIT_FAILURE;
   }
 
@@ -74,16 +75,16 @@ int main(int argc, char* argv[]) {
 
   //Output 'machine code' if in debug mode
   if (debug) {
-    printMemory(programLength);
+    printMemory(systemStatePtr, programLength);
   }
 
   //Run until encountering opcode 0 (HLT) or an error
   bool success = true, finished = false;
   while (success && !finished) {
-    success = executeNextInstruction(&finished);
+    success = executeNextInstruction(systemStatePtr, &finished);
   }
 
   //Clean up and exit
-  destroySimulator();
+  destroySimulator(systemStatePtr);
   return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }

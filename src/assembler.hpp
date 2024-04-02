@@ -2,21 +2,11 @@
 #include <string>
 #include <vector>
 
-std::map<std::string, int> mnemonicOpcodeMap = {
-  {"DAT", 000},
-  {"HLT", 000},
-  {"ADD", 100},
-  {"SUB", 200},
-  {"STA", 300},
-  {"LDA", 500},
-  {"BRA", 600},
-  {"BRZ", 700},
-  {"BRP", 800},
-  {"INP", 901},
-  {"OUT", 902}
-};
+#include "common/state.hpp"
+#include "common/instructions.hpp"
 
-int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* inputData, int inputDataLength) {
+int assembleProgram(SystemState* systemState, std::vector<std::string>* inputData,
+                    int inputDataLength) {
   //Create variable sized storage for tokens
   std::vector<std::vector<std::string>> codeVectors;
 
@@ -60,8 +50,9 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
   int programLength = codeVectors.size();
 
   //Fail if memory won't be able to hold the program
-  if (programLength > memoryLength) {
-    std::cerr << "ERROR: Memory is not large enough to store program (" << programLength << " > " << memoryLength << ")" << std::endl;
+  if (programLength > systemState->memoryLength) {
+    std::cerr << "ERROR: Memory is not large enough to store program (" << programLength
+              << " > " << systemState->memoryLength << ")" << std::endl;
     return -1;
   }
 
@@ -71,7 +62,7 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
     std::vector<std::string> codeVector = codeVectors[i];
 
     //Save label index and remove label
-    if (!mnemonicOpcodeMap.contains(codeVector[1])) {
+    if (!instructions::mnemonicOpcodeMap.contains(codeVector[1])) {
       labelIndexMap[codeVector[1]] = i;
       codeVectors[i].erase(codeVectors[i].begin()++);
     }
@@ -95,13 +86,13 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
     }
 
     //Check for unrecognised instructions
-    if (!mnemonicOpcodeMap.contains(codeVector[1])) {
+    if (!instructions::mnemonicOpcodeMap.contains(codeVector[1])) {
       std::cerr << "ERROR: Unrecognised instruction '" << codeVector[1] << "' on line " << codeVector[0] << std::endl;
       return -1;
     }
 
     //Convert mnemonic to an opcode, then retrieve the operand
-    int opcode = mnemonicOpcodeMap[codeVector[1]];
+    int opcode = instructions::mnemonicOpcodeMap[codeVector[1]];
     int operand = 0;
     //Skip operand for I/O and halt instructions
     if (((opcode / 100) != 9) and (codeVector[1] != std::string("HLT"))) {
@@ -129,7 +120,7 @@ int assembleProgram(int memory[], int memoryLength, std::vector<std::string>* in
 
     //Save instruction to memory
     int result = opcode + operand;
-    memory[i] = result;
+    systemState->memoryPtr[i] = result;
   }
 
   return programLength;
