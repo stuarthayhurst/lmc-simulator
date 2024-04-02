@@ -51,7 +51,7 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
 
   //Fail if memory won't be able to hold the program
   if (programLength > systemState->memoryLength) {
-    std::cerr << "ERROR: Memory is not large enough to store program (" << programLength
+    std::cerr << "ERROR: Memory is not large enough to store program (" << programLength \
               << " > " << systemState->memoryLength << ")" << std::endl;
     return -1;
   }
@@ -87,7 +87,8 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
 
     //Check for unrecognised instructions
     if (!instructions::mnemonicOpcodeMap.contains(codeVector[1])) {
-      std::cerr << "ERROR: Unrecognised instruction '" << codeVector[1] << "' on line " << codeVector[0] << std::endl;
+      std::cerr << "ERROR: Unrecognised instruction '" << codeVector[1] << "' on line " \
+                << codeVector[0] << std::endl;
       return -1;
     }
 
@@ -99,20 +100,23 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
       //Check the operand is present (optional for DAT)
       if (tokenCount < 3) {
         if (codeVector[1] != std::string("DAT")) {
-          std::cerr << "ERROR: Missing operand for instruction '" << codeVector[1] << "' on line " << codeVector[0] << std::endl;
+          std::cerr << "ERROR: Missing operand for instruction '" << codeVector[1] \
+                    << "' on line " << codeVector[0] << std::endl;
           return -1;
         }
       } else {
         try {
           operand = std::stoi(codeVector[2]);
         } catch (...) {
-          std::cerr << "ERROR: Undefined label '" << codeVector[2] << "' on line " << codeVector[0] << std::endl;
+          std::cerr << "ERROR: Undefined label '" << codeVector[2] << "' on line " \
+                    << codeVector[0] << std::endl;
           return -1;
         }
 
         //Check operand is 3 digits or less
         if (operand > 999 or operand < -999) {
-          std::cerr << "ERROR: Operand '" << operand << "' must be between 999 and -999 on line " << codeVector[0] << std::endl;
+          std::cerr << "ERROR: Operand '" << operand \
+                    << "' must be between 999 and -999 on line " << codeVector[0] << std::endl;
           return -1;
         }
       }

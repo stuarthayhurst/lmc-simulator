@@ -33,7 +33,8 @@ SystemState* createSimulator(int memoryLength) {
 
   //Warn on non-100 memory sizes
   if (systemState->memoryLength != 100) {
-    std::cerr << "WARNING: Memory set to non-standard value, behaviour may be altered" << std::endl;
+    std::cerr << "WARNING: Memory set to non-standard value, behaviour may be altered" \
+              << std::endl;
   }
 
   return systemState;
