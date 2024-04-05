@@ -25,6 +25,7 @@
     - `fibonacci.asm`: Output the first `n` terms of the Fibonacci sequence
     - `iteration.asm`: Iterate over a group of addresses
     - `binary.asm`: Convert an integer from input into 8-bit binary
+    - `leapyear.asm`: Check if a year from 1 to 999 was a leap year
 
 ## Contributing:
   - Feel free to submit pull requests!
