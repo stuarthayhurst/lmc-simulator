@@ -7,8 +7,12 @@
 
 int assembleProgram(SystemState* systemState, std::vector<std::string>* inputData,
                     int inputDataLength) {
-  //Create variable sized storage for tokens
-  std::vector<std::vector<std::string>> codeVectors;
+  //Create variable sized storage for tokens and line numbers
+  struct CodeData {
+    int lineNumber;
+    std::vector<std::string> codeVector;
+  };
+  std::vector<CodeData> codeDataVectors;
 
   //Split into code vectors
   for (int i = 0; i < inputDataLength; i++) {
@@ -42,12 +46,12 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
 
     //Add the line to the other vectors if it's not empty
     if (tokenIndex != 0) {
-      codeVectors.push_back(codeVector);
+      codeDataVectors.push_back({i + 1, codeVector});
     }
   }
 
   //Get the new size of the program, after splitting into vectors
-  int programLength = codeVectors.size();
+  int programLength = codeDataVectors.size();
 
   //Fail if memory won't be able to hold the program
   if (programLength > systemState->memoryLength) {
@@ -59,18 +63,16 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
   //Save label addresses and remove
   std::map<std::string, int> labelIndexMap;
   for (int i = 0; i < programLength; i++) {
-    std::vector<std::string> codeVector = codeVectors[i];
-
     //Save label index and remove label
-    if (!instructions::mnemonicOpcodeMap.contains(codeVector[1])) {
-      labelIndexMap[codeVector[1]] = i;
-      codeVectors[i].erase(codeVectors[i].begin()++);
+    if (!instructions::mnemonicOpcodeMap.contains(codeDataVectors[i].codeVector[1])) {
+      labelIndexMap[codeDataVectors[i].codeVector[1]] = i;
+      codeDataVectors[i].codeVector.erase(codeDataVectors[i].codeVector.begin()++);
     }
   }
 
   //Convert opcodes, operands and labels into 'machine code'
   for (int i = 0; i < programLength; i++) {
-    std::vector<std::string> codeVector = codeVectors[i];
+    std::vector<std::string> codeVector = codeDataVectors[i].codeVector;
 
     //Skip any empty lines due to labels (line numbers will remain)
     unsigned int tokenCount = codeVector.size();
@@ -88,7 +90,7 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
     //Check for unrecognised instructions
     if (!instructions::mnemonicOpcodeMap.contains(codeVector[1])) {
       std::cerr << "ERROR: Unrecognised instruction '" << codeVector[1] << "' on line " \
-                << codeVector[0] << std::endl;
+                << codeDataVectors[i].lineNumber << std::endl;
       return -1;
     }
 
@@ -101,7 +103,7 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
       if (tokenCount < 3) {
         if (codeVector[1] != std::string("DAT")) {
           std::cerr << "ERROR: Missing operand for instruction '" << codeVector[1] \
-                    << "' on line " << codeVector[0] << std::endl;
+                    << "' on line " << codeDataVectors[i].lineNumber << std::endl;
           return -1;
         }
       } else {
@@ -109,7 +111,7 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
           operand = std::stoi(codeVector[2]);
         } catch (...) {
           std::cerr << "ERROR: Undefined label '" << codeVector[2] << "' on line " \
-                    << codeVector[0] << std::endl;
+                    << codeDataVectors[i].lineNumber << std::endl;
           return -1;
         }
 
