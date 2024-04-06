@@ -68,7 +68,8 @@ namespace instructions {
     } else if (operand == 2) { //Output
       std::cout << systemState->accumulator << std::endl;
     } else {
-      std::cerr << "ERROR: Unknown opcode '" << 900 + operand << "'" << std::endl;
+      std::cerr << "ERROR: Unknown opcode '" << 900 + operand << "'" << " at address " \
+                << systemState->programCounter - 1 << std::endl;
       return -1;
     }
     return 0;
