@@ -9,7 +9,7 @@ ifeq ($(DEBUG),true)
   CFLAGS += -g
 endif
 
-simulator: src/main.cpp src/*.hpp
+simulator: src/main.cpp src/*.hpp src/common/*.hpp
 	$(CXX) "src/main.cpp" -o "$@" $(CFLAGS)
 
 .PHONY: clean
