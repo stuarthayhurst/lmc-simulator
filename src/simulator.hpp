@@ -78,6 +78,8 @@ bool executeNextInstruction(SystemState* systemState, bool* finished) {
     //Check operand address is within bounds (exception for I/O, as it's not an address)
     if (opcode != 900 && checkMemoryAddress(systemState, operand) == -1) {
       //Invalid address, end program early
+      std::cerr << "ERROR: Invalid operand '" << operand << "' at address " \
+                << systemState->programCounter - 1 << std::endl;
       *finished = false;
       return false;
     }
