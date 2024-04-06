@@ -92,7 +92,8 @@ bool executeNextInstruction(SystemState* systemState, bool* finished) {
       }
     } else {
       //Failed to execute, end program early
-      std::cerr << "ERROR: Unknown opcode '" << opcode << "'" << std::endl;
+      std::cerr << "ERROR: Unknown opcode '" << opcode << "' at address " \
+                << systemState->programCounter - 1 << std::endl;
       *finished = false;
       return false;
     }
