@@ -1,81 +1,81 @@
-           INP
-           STA input
+	INP
+	STA input
 
 #Main loop for each bit
-bitStart   LDA one
+bitLoop	LDA one
 
 #Reset result
-           STA result
-           LDA bitCount
+	STA result
+	LDA bCount
 #Handle n^0
-           BRZ powerEnd
+	BRZ powEnd
 
 #Modified from power.asm (starts with (bit number - 1) loaded)
 #-----------------------
-           SUB one
-           STA power
+	SUB one
+	STA power
 
-powerLoop  LDA powerTwo
-           SUB one
-           STA powerCount
+powLoop	LDA powTwo
+	SUB one
+	STA pCount
 
 #Save the result as the working value, then reset result
-           LDA result
-           STA working
-           LDA zero
-           STA result
+	LDA result
+	STA working
+	LDA zero
+	STA result
 
 #Multiply working value by original input
-loop       LDA result
-           ADD working
-           STA result
-           LDA powerCount
-           SUB one
-           STA powerCount
-           BRP loop
+loop	LDA result
+	ADD working
+	STA result
+	LDA pCount
+	SUB one
+	STA pCount
+	BRP loop
 
-           LDA power
-           SUB one
-           STA power
-           BRP powerLoop
+	LDA power
+	SUB one
+	STA power
+	BRP powLoop
 #-----------------------
 
 #power.asm's logic saves result to result
-powerEnd   LDA result
-           STA bitVal
+powEnd	LDA result
+	STA bitVal
 
 #Update the bit number
-           LDA bitCount
-           SUB one
-           STA bitCount
+	LDA bCount
+	SUB one
+	STA bCount
 
 #Exit when bit number is -2 (-1 is actually bit 0)
-           ADD one
-           BRP skip
-           BRA end
+	ADD one
+	BRP skip
+	BRA end
 
 #Process current bit
-           skip LDA input
-           SUB bitVal
-           BRP bitHigh
-           LDA zero
-           OUT
-           BRA bitStart
-bitHigh    STA input
-           LDA one
-           OUT
-           BRA bitStart
+skip	LDA input
+	SUB bitVal
+	BRP bitHigh
+	LDA zero
+	OUT
+	BRA bitLoop
+bitHigh	STA input
+	LDA one
+	OUT
+	BRA bitLoop
 
-end        HLT
+end	HLT
 
-input      DAT 0
-one        DAT 1
-zero       DAT 0
-bitVal     DAT 0
-bitCount   DAT 7
+input	DAT 0
+one	DAT 1
+zero	DAT 0
+bitVal	DAT 0
+bCount	DAT 7
 
-powerTwo   DAT 2
-result     DAT 1
-working    DAT 0
-powerCount DAT 0
-power      DAT 0
+powTwo	DAT 2
+result	DAT 1
+working	DAT 0
+pCount	DAT 0
+power	DAT 0

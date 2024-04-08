@@ -1,24 +1,24 @@
-          INP
-          SUB one
-          STA count
+	INP
+	SUB one
+	STA count
 
-loopStart LDA dataStart
-          OUT
-          LDA loopStart
-          ADD one
-          STA loopStart
-          LDA count
-          SUB one
-          STA count
-          BRP loopStart
+loop	LDA data
+	OUT
+	LDA loop
+	ADD one
+	STA loop
+	LDA count
+	SUB one
+	STA count
+	BRP loop
 
-count     DAT 0
-one       DAT 1
+count	DAT 0
+one	DAT 1
 
-dataStart DAT 0
-          DAT 1
-          DAT 2
-          DAT 3
-          DAT 2
-          DAT 1
-          DAT 0
+data	DAT 0
+	DAT 1
+	DAT 2
+	DAT 3
+	DAT 2
+	DAT 1
+	DAT 0
