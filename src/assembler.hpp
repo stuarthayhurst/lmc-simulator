@@ -5,33 +5,21 @@
 #include "common/state.hpp"
 #include "common/instructions.hpp"
 
-int assembleProgram(SystemState* systemState, std::vector<std::string>* inputData,
-                    int inputDataLength) {
-  //Create variable sized storage for tokens and line numbers
-  struct CodeData {
-    int lineNumber;
+namespace {
+  static std::vector<std::string> splitLine(std::string lineText) {
     std::vector<std::string> codeVector;
-  };
-  std::vector<CodeData> codeDataVectors;
-
-  //Split into code vectors
-  for (int i = 0; i < inputDataLength; i++) {
-    std::vector<std::string> codeVector;
-    codeVector.push_back(std::to_string(i + 1));
-    std::string inputLine = (*inputData)[i];
-
-    int tokenIndex = 0;
     bool lastCharacterWasSpace = true;
+    int tokenIndex = -1;
 
     //Split the line of code into tokens
-    int stringLength = inputLine.size();
+    int stringLength = lineText.size();
     for (int letterIndex = 0; letterIndex < stringLength; letterIndex++) {
       //Create a new token on each character group
-      if (inputLine[letterIndex] == ' ' || inputLine[letterIndex] == '\t') {
+      if (lineText[letterIndex] == ' ' || lineText[letterIndex] == '\t') {
         lastCharacterWasSpace = true;
       } else {
         if (lastCharacterWasSpace) {
-          if (inputLine[letterIndex] == '#') {
+          if (lineText[letterIndex] == '#') {
             break;
           }
           tokenIndex++;
@@ -40,93 +28,139 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
         }
 
         //Add the character to the current token
-        codeVector[tokenIndex] += inputLine[letterIndex];
+        codeVector[tokenIndex] += lineText[letterIndex];
       }
     }
 
-    //Add the line to the other vectors if it's not empty
-    if (tokenIndex != 0) {
-      codeDataVectors.push_back({i + 1, codeVector});
+    //Return either the parsed line or nothing
+    if (tokenIndex == -1) {
+      codeVector.clear();
     }
+    return codeVector;
+  }
+}
+
+int assembleProgram(SystemState* systemState, std::vector<std::string>* inputData,
+                    int inputDataLength) {
+  //Variable length storage for processed data
+  struct CodeData {
+    int lineNumber;
+    std::string instruction;
+    std::string operandLabel = "NONE";
+    int operandData = 0;
+  };
+  std::vector<CodeData> processedData;
+
+  //Track label addresses and pending labels
+  std::map<std::string, int> labelAddressMap = {{"NONE", 0}};
+  std::vector<std::string> pendingLabels;
+  int lineAddress = 0;
+
+  //Iterate over each line of code
+  for (int i = 0; i < inputDataLength; i++) {
+    //Split the line into tokens, skip comments
+    std::vector<std::string> lineVector = splitLine((*inputData)[i]);
+    if (lineVector.size() == 0) {
+      continue;
+    }
+
+    //If the first token isn't an instruction, assume it's a label
+    if (!instructions::mnemonicOpcodeMap.contains(lineVector[0])) {
+      //Use the next instruction as the label's target (could be on the current line)
+      pendingLabels.push_back(lineVector[0]);
+      lineVector.erase(lineVector.begin());
+      if (lineVector.size() == 0) {
+        continue;
+      }
+    }
+
+    //Fill in pending labels
+    for (unsigned int labelIndex = 0; labelIndex < pendingLabels.size(); labelIndex++) {
+      labelAddressMap[pendingLabels[labelIndex]] = lineAddress;
+    }
+    pendingLabels.clear();
+
+    //If the first token still isn't an instruction, give up
+    if (!instructions::mnemonicOpcodeMap.contains(lineVector[0])) {
+      std::cerr << "ERROR: Expected an instruction on line " << i + 1 \
+                << ", got '" << lineVector[0] << "' instead" << std::endl;
+      return -1;
+    }
+
+    //Add an entry for the processed data and the instruction
+    processedData.emplace_back();
+    processedData[lineAddress].instruction = lineVector[0];
+    processedData[lineAddress].lineNumber = i + 1;
+
+    //Check operand is present and save, if required
+    bool operandPresent = (lineVector.size() > 1) ? true : false;
+    if (instructions::mnemonicOperandMap[lineVector[0]]) {
+      //Requires an operand, none found
+      if (!operandPresent) {
+        std::cerr << "ERROR: Missing operand for instruction '" << lineVector[0] \
+                  << "' on line " << i + 1 << std::endl;
+        return -1;
+      }
+
+      processedData[lineAddress].operandLabel = lineVector[1];
+    }
+
+    lineAddress++;
   }
 
-  //Get the new size of the program, after splitting into vectors
-  int programLength = codeDataVectors.size();
+  //Warn about remaining labels
+  for (unsigned int i = 0; i < pendingLabels.size(); i++) {
+    std::cerr << "WARNING: Couldn't give label '" << pendingLabels[i] \
+              << "' a line number, ignoring" << std::endl;
+  }
+  pendingLabels.clear();
+
+  //Get the final size of the program
+  int programLength = processedData.size();
 
   //Fail if memory won't be able to hold the program
   if (programLength > systemState->memoryLength) {
-    std::cerr << "ERROR: Memory is not large enough to store program (" << programLength \
+    std::cerr << "ERROR: Memory isn't large enough to store program (" << programLength \
               << " > " << systemState->memoryLength << ")" << std::endl;
     return -1;
   }
 
-  //Save label addresses and remove
-  std::map<std::string, int> labelIndexMap;
-  for (int i = 0; i < programLength; i++) {
-    //Save label index and remove label
-    if (!instructions::mnemonicOpcodeMap.contains(codeDataVectors[i].codeVector[1])) {
-      labelIndexMap[codeDataVectors[i].codeVector[1]] = i;
-      codeDataVectors[i].codeVector.erase(codeDataVectors[i].codeVector.begin()++);
-    }
-  }
+  //Convert processed data into 'machine code'
+  for (unsigned int i = 0; i < processedData.size(); i++) {
+    //Convert mnemonic to an opcode
+    int opcode = instructions::mnemonicOpcodeMap[processedData[i].instruction];
 
-  //Convert opcodes, operands and labels into 'machine code'
-  for (int i = 0; i < programLength; i++) {
-    std::vector<std::string> codeVector = codeDataVectors[i].codeVector;
-
-    //Skip any empty lines due to labels (line numbers will remain)
-    unsigned int tokenCount = codeVector.size();
-    if (tokenCount == 1) {
-      continue;
-    }
-
-    //Replace labels with addresses
-    for (unsigned int tokenIndex = 1; tokenIndex < tokenCount; tokenIndex++) {
-      if (labelIndexMap.contains(codeVector[tokenIndex])) {
-        codeVector[tokenIndex] = std::to_string(labelIndexMap[codeVector[tokenIndex]]);
+    //Convert labels to addresses and data
+    int operand = 0;
+    if (labelAddressMap.contains(processedData[i].operandLabel)) {
+      operand = labelAddressMap[processedData[i].operandLabel];
+    } else if (processedData[i].instruction == "DAT") {
+      //DAT can have a label or data as an operand
+      try {
+        processedData[i].operandData = std::stoi(processedData[i].operandLabel);
+        processedData[i].operandLabel = "NONE";
+      } catch (...) {
+        std::cerr << "ERROR: Operand '" << processedData[i].operandLabel \
+                  << "' isn't a label or numerical on line " \
+                  << processedData[i].lineNumber << std::endl;
+        return -1;
       }
-    }
-
-    //Check for unrecognised instructions
-    if (!instructions::mnemonicOpcodeMap.contains(codeVector[1])) {
-      std::cerr << "ERROR: Unrecognised instruction '" << codeVector[1] << "' on line " \
-                << codeDataVectors[i].lineNumber << std::endl;
+    } else {
+      std::cerr << "ERROR: Undefined label '" << processedData[i].operandLabel \
+                << "' on line " << processedData[i].lineNumber << std::endl;
       return -1;
     }
 
-    //Convert mnemonic to an opcode, then retrieve the operand
-    int opcode = instructions::mnemonicOpcodeMap[codeVector[1]];
-    int operand = 0;
-    //Skip operand for I/O and halt instructions
-    if (((opcode / 100) != 9) and (codeVector[1] != std::string("HLT"))) {
-      //Check the operand is present (optional for DAT)
-      if (tokenCount < 3) {
-        if (codeVector[1] != std::string("DAT")) {
-          std::cerr << "ERROR: Missing operand for instruction '" << codeVector[1] \
-                    << "' on line " << codeDataVectors[i].lineNumber << std::endl;
-          return -1;
-        }
-      } else {
-        try {
-          operand = std::stoi(codeVector[2]);
-        } catch (...) {
-          std::cerr << "ERROR: Undefined label '" << codeVector[2] << "' on line " \
-                    << codeDataVectors[i].lineNumber << std::endl;
-          return -1;
-        }
-
-        //Check operand is 3 digits or less
-        if (operand > 999 or operand < -999) {
-          std::cerr << "ERROR: Operand '" << operand \
-                    << "' must be between 999 and -999 on line " << codeVector[0] << std::endl;
-          return -1;
-        }
-      }
+    //Check operand is 3 digits or less
+    int operandData = processedData[i].operandData;
+    if (operandData > 999 or operandData < -999) {
+      std::cerr << "ERROR: Operand '" << operandData \
+                << "' must be between 999 and -999 on line " << i + 1 << std::endl;
+      return -1;
     }
 
-    //Save instruction to memory
-    int result = opcode + operand;
-    systemState->memoryPtr[i] = result;
+    //Write the result to memory
+    systemState->memoryPtr[i] = opcode + operand + processedData[i].operandData;
   }
 
   return programLength;
