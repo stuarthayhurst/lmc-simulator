@@ -1,9 +1,4 @@
-CFLAGS += -Wall -Wextra -Werror -std=c++20 -march=native -flto=auto
-ifeq ($(FAST),true)
-  CFLAGS += -Ofast
-else
-  CFLAGS += -O3
-endif
+CFLAGS += -Wall -Wextra -Werror -std=c++20 -march=native -O3
 
 ifeq ($(DEBUG),true)
   CFLAGS += -g

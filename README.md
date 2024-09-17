@@ -9,7 +9,6 @@
   - `make`: Builds the simulator
   - `make clean`: Removes the compiled simulator, if present
   - `DEBUG=[true/false]`: Environment variable to enable debug symbols
-  - `FAST=[true/false]`: Environment variable to enable more optimisation flags
 
 ## Usage:
   - `./simulator [FILE] [MEMORY SIZE]`
