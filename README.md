@@ -3,12 +3,15 @@
 
 ## Requirements:
   - A compiler supporting `c++-20`
-  - Override the default by setting the `CXX` environment variable
+    - Override the default by setting the `CXX` environment variable, if required
 
 ## Building:
   - `make`: Builds the simulator
+    - Supports multiple threads with `-j[THREAD COUNT]`
+    - Use `make -j$(nproc)` to build with all available threads
   - `make clean`: Removes the compiled simulator, if present
   - `DEBUG=[true/false]`: Environment variable to enable debug symbols
+  - `BUILD_DIR`: Environment variable to configure built object output
 
 ## Usage:
   - `./simulator [FILE] [MEMORY SIZE]`
