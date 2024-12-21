@@ -6,7 +6,7 @@
 
 namespace instructions {
   namespace {
-    int applyOverflow(int value) {
+    static int applyOverflow(int value) {
       //If the value is above or below 999 or -999, wrap to other side of the interval
       if (value > 999) {
         value -= 999;

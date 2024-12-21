@@ -4,7 +4,7 @@
 #include "common/instructions.hpp"
 
 namespace {
-  int checkMemoryAddress(SystemState* systemState, int address) {
+  static int checkMemoryAddress(SystemState* systemState, int address) {
     if (address >= systemState->memoryLength) {
       std::cerr << "ERROR: Cannot access memory address '" << address << "'" << std::endl;
       return -1;
