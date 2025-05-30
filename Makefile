@@ -1,4 +1,4 @@
-CXXFLAGS += -Wall -Wextra -Werror -std=c++20 -march=native -O3 -flto=auto
+CXXFLAGS += -Wall -Wextra -Werror -Wpedantic -std=c++20 -march=native -O3 -flto=auto
 BUILD_DIR ?= build
 
 ifeq ($(DEBUG),true)
