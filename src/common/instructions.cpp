@@ -1,5 +1,5 @@
 #include <iostream>
-#include <map>
+#include <unordered_map>
 
 #include "state.hpp"
 #include "instructions.hpp"
@@ -79,7 +79,7 @@ namespace instructions {
 }
 
 namespace instructions {
-  const std::map<int, InstructionHandler> opcodeHandlerMap = {
+  const std::unordered_map<int, InstructionHandler> opcodeHandlerMap = {
     {100, instructions::add},
     {200, instructions::subtract},
     {300, instructions::store},
@@ -90,7 +90,7 @@ namespace instructions {
     {900, instructions::inputOutput}
   };
 
-  const std::map<std::string, int> mnemonicOpcodeMap = {
+  const std::unordered_map<std::string, int> mnemonicOpcodeMap = {
     {"DAT", 000},
     {"HLT", 000},
     {"ADD", 100},
@@ -104,7 +104,7 @@ namespace instructions {
     {"OUT", 902}
   };
 
-  const std::map<std::string, bool> mnemonicOperandMap = {
+  const std::unordered_map<std::string, bool> mnemonicOperandMap = {
     {"DAT", true},
     {"HLT", false},
     {"ADD", true},

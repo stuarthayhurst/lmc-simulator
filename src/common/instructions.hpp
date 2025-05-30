@@ -1,7 +1,7 @@
 #ifndef INSTRUCTIONS
 #define INSTRUCTIONS
 
-#include <map>
+#include <unordered_map>
 
 #include "state.hpp"
 
@@ -19,9 +19,9 @@ namespace instructions {
 }
 
 namespace instructions {
-  extern const std::map<int, InstructionHandler> opcodeHandlerMap;
-  extern const std::map<std::string, int> mnemonicOpcodeMap;
-  extern const std::map<std::string, bool> mnemonicOperandMap;
+  extern const std::unordered_map<int, InstructionHandler> opcodeHandlerMap;
+  extern const std::unordered_map<std::string, int> mnemonicOpcodeMap;
+  extern const std::unordered_map<std::string, bool> mnemonicOperandMap;
 }
 
 #endif
