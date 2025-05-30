@@ -41,6 +41,11 @@ namespace {
   }
 }
 
+/*
+ - Assemble a program into memory
+ - Only modifies the memory, doesn't modify the system state otherwise
+ - Returns the size of the assembled program
+*/
 int assembleProgram(SystemState* systemState, std::vector<std::string>* inputData,
                     int inputDataLength) {
   //Variable length storage for processed data
