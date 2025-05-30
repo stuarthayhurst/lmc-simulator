@@ -53,6 +53,11 @@ void printMemory(SystemState* systemState, int size) {
   std::cout << std::endl;
 }
 
+/*
+ - Execute the next instruction in memory
+ - Returns true if the instruction executed successfully
+ - Writes true to finished if the program finished naturally (HLT instruction)
+*/
 bool executeNextInstruction(SystemState* systemState, bool* finished) {
     //Check memory address is within bounds
     if (checkMemoryAddress(systemState, systemState->programCounter) == -1) {
