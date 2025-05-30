@@ -107,7 +107,7 @@ namespace instructions {
     {"INP", 901},
     {"OUT", 902}
   };
-  std::map<std::string, int> mnemonicOperandMap = {
+  std::map<std::string, bool> mnemonicOperandMap = {
     {"DAT", true},
     {"HLT", false},
     {"ADD", true},
