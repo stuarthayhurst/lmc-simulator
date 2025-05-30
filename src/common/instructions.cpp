@@ -90,11 +90,6 @@ namespace instructions {
     {900, instructions::inputOutput}
   };
 
-  struct OpcodeData {
-    int opcode;
-    bool requiresOperand;
-  };
-
   const std::map<std::string, int> mnemonicOpcodeMap = {
     {"DAT", 000},
     {"HLT", 000},
