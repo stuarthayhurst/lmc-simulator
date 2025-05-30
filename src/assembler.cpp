@@ -1,6 +1,6 @@
 #include <iostream>
-#include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "common/state.hpp"
@@ -53,7 +53,7 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
   std::vector<CodeData> processedData;
 
   //Track label addresses and pending labels
-  std::map<std::string, int> labelAddressMap = {{"NONE", 0}};
+  std::unordered_map<std::string, int> labelAddressMap = {{"NONE", 0}};
   std::vector<std::string> pendingLabels;
   int lineAddress = 0;
 
