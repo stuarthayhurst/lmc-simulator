@@ -6,7 +6,6 @@
 
 #include "common/state.hpp"
 
-int assembleProgram(SystemState* systemState, std::vector<std::string>* inputData,
-                    int inputDataLength);
+int assembleProgram(SystemState* systemState, std::vector<std::string>* inputData);
 
 #endif

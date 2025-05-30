@@ -53,15 +53,14 @@ int main(int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
-  int inputLength = fileData.size();
-  if (inputLength == 0) {
+  if (fileData.size() == 0) {
     std::cerr << "ERROR: Input file specified is empty" << std::endl;
     destroySimulator(systemStatePtr);
     return EXIT_FAILURE;
   }
 
   //Actually assemble the program, save the size
-  int programLength = assembleProgram(systemStatePtr, &fileData, inputLength);
+  int programLength = assembleProgram(systemStatePtr, &fileData);
 
   if (programLength == -1) {
     std::cerr << "ERROR: Failed to assemble '" << filePath << "'" << std::endl;

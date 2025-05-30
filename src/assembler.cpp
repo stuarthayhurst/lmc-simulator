@@ -46,8 +46,7 @@ namespace {
  - Only modifies the memory, doesn't modify the system state otherwise
  - Returns the size of the assembled program
 */
-int assembleProgram(SystemState* systemState, std::vector<std::string>* inputData,
-                    int inputDataLength) {
+int assembleProgram(SystemState* systemState, std::vector<std::string>* inputData) {
   //Variable length storage for processed data
   struct CodeData {
     int lineNumber;
@@ -63,7 +62,7 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
   int lineAddress = 0;
 
   //Iterate over each line of code
-  for (int i = 0; i < inputDataLength; i++) {
+  for (unsigned int i = 0; i < inputData->size(); i++) {
     //Split the line into tokens, skip comments
     std::vector<std::string> lineVector = splitLine((*inputData)[i]);
     if (lineVector.size() == 0) {
