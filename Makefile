@@ -2,7 +2,7 @@ CXXFLAGS += -Wall -Wextra -Werror -Wpedantic -std=c++20 -march=native -O3 -flto=
 BUILD_DIR ?= build
 
 ifeq ($(DEBUG),true)
-  CXXFLAGS += -g
+  CXXFLAGS += -g -fno-omit-frame-pointer -fsanitize=address,undefined
 endif
 
 OBJECTS := $(wildcard ./src/*.cpp) $(wildcard ./src/*/*.cpp)
