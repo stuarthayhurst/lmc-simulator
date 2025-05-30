@@ -79,7 +79,7 @@ namespace instructions {
 }
 
 namespace instructions {
-  std::map<int, InstructionHandler> opcodeHandlerMap = {
+  const std::map<int, InstructionHandler> opcodeHandlerMap = {
     {100, instructions::add},
     {200, instructions::subtract},
     {300, instructions::store},
@@ -94,7 +94,8 @@ namespace instructions {
     int opcode;
     bool requiresOperand;
   };
-  std::map<std::string, int> mnemonicOpcodeMap = {
+
+  const std::map<std::string, int> mnemonicOpcodeMap = {
     {"DAT", 000},
     {"HLT", 000},
     {"ADD", 100},
@@ -107,7 +108,8 @@ namespace instructions {
     {"INP", 901},
     {"OUT", 902}
   };
-  std::map<std::string, bool> mnemonicOperandMap = {
+
+  const std::map<std::string, bool> mnemonicOperandMap = {
     {"DAT", true},
     {"HLT", false},
     {"ADD", true},

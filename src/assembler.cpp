@@ -95,7 +95,7 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
 
     //Check operand is present and save, if required
     bool operandPresent = (lineVector.size() > 1) ? true : false;
-    if (instructions::mnemonicOperandMap[lineVector[0]]) {
+    if (instructions::mnemonicOperandMap.at(lineVector[0])) {
       //Requires an operand, none found
       if (!operandPresent) {
         std::cerr << "ERROR: Missing operand for instruction '" << lineVector[0] \
@@ -129,7 +129,7 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
   //Convert processed data into 'machine code'
   for (unsigned int i = 0; i < processedData.size(); i++) {
     //Convert mnemonic to an opcode
-    int opcode = instructions::mnemonicOpcodeMap[processedData[i].instruction];
+    int opcode = instructions::mnemonicOpcodeMap.at(processedData[i].instruction);
 
     //Convert labels to addresses and data
     int operand = 0;

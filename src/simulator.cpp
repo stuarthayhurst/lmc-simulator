@@ -86,7 +86,7 @@ bool executeNextInstruction(SystemState* systemState, bool* finished) {
 
     //Retreive and execute 'instruction'
     if (instructions::opcodeHandlerMap.contains(opcode)) {
-      InstructionHandler handler = instructions::opcodeHandlerMap[opcode];
+      InstructionHandler handler = instructions::opcodeHandlerMap.at(opcode);
       if (handler(systemState, operand) == -1) {
         //Failed to execute, end program early
         *finished = false;

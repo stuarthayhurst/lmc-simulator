@@ -19,9 +19,9 @@ namespace instructions {
 }
 
 namespace instructions {
-  extern std::map<int, InstructionHandler> opcodeHandlerMap;
-  extern std::map<std::string, int> mnemonicOpcodeMap;
-  extern std::map<std::string, bool> mnemonicOperandMap;
+  extern const std::map<int, InstructionHandler> opcodeHandlerMap;
+  extern const std::map<std::string, int> mnemonicOpcodeMap;
+  extern const std::map<std::string, bool> mnemonicOperandMap;
 }
 
 #endif
