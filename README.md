@@ -11,7 +11,8 @@
     - Supports multiple threads with `-j[THREAD COUNT]`
     - Use `make -j$(nproc)` to build with all available threads
   - `make clean`: Removes the compiled simulator, if present
-  - `DEBUG=[true/false]`: Environment variable to enable debug symbols
+  - `DEBUG=[true/false]`: Environment variable to enable debug support
+    - Includes debug symbols, retains the frame pointer and uses sanitisers
   - `BUILD_DIR`: Environment variable to configure built object output
 
 ## Usage:
@@ -19,7 +20,6 @@
     - For example, `./simulator programs/power.asm`
     - Or to limit the memory size to 50, `./simulator programs/power.asm 50`
   - Set `DEBUG="true"` as an environment variable, to enable debug output
-    - Additionally includes debug symbols, retains the frame pointer and uses sanitisers
     - `DEBUG="true" ./simulator [FILE]`
 
 ## Sample programs:
