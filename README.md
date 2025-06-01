@@ -1,5 +1,5 @@
 ## lmc-simulator
-  - Assemble and execute assembly of the Little Man Computer instruction set
+  - Assemble and execute assembly of the [Little Man Computer](https://en.wikipedia.org/wiki/Little_Man_Computer) instruction set
 
 ## Requirements:
   - A compiler supporting `c++-20`
