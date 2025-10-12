@@ -10,7 +10,7 @@ namespace {
   struct CodeData {
     int lineNumber;
     std::string instruction;
-    std::string operandLabel = "NONE";
+    std::string operandLabel;
     int operandData = 0;
   };
 }
@@ -115,12 +115,59 @@ namespace {
       lineAddress++;
     }
 
-    //Warn about remaining unresolved labels
+    //Warn about remaining labels
     for (unsigned int i = 0; i < pendingLabels.size(); i++) {
       std::cerr << "WARNING: Couldn't give label '" << pendingLabels[i] \
                 << "' a line number, ignoring" << std::endl;
     }
     pendingLabels.clear();
+
+    return true;
+  }
+
+  /*
+   - Resolve operand labels into operand data
+   - For DAT instructions, convert the operand literally if no label matches
+  */
+  static bool resolveOperands(std::vector<CodeData>* tokens,
+                              std::unordered_map<std::string, int>* labelAddressMap) {
+    //Verify operand limits and handle DAT
+    for (auto& token : *tokens) {
+      if (token.instruction == "DAT") {
+        //DAT can have a label or data as an operand, handle data
+        if (!labelAddressMap->contains(token.operandLabel)) {
+          try {
+            token.operandData = std::stoi(token.operandLabel);
+            token.operandLabel = "";
+          } catch (...) {
+            std::cerr << "ERROR: Operand '" << token.operandLabel \
+                      << "' isn't a label or numerical on line " \
+                      << token.lineNumber << std::endl;
+            return false;
+          }
+        }
+      }
+
+      //Check operand is 3 digits or less
+      int operandData = token.operandData;
+      if (operandData > 999 or operandData < -999) {
+        std::cerr << "ERROR: Operand '" << operandData \
+                  << "' must be between 999 and -999 on line " \
+                  << token.lineNumber << std::endl;
+        return false;
+      }
+    }
+
+    //Resolve labels to addresses and data
+    for (auto& token : *tokens) {
+      if (labelAddressMap->contains(token.operandLabel)) {
+        token.operandData = (*labelAddressMap)[token.operandLabel];
+      } else if (token.operandLabel != "") {
+        std::cerr << "ERROR: Undefined label '" << token.operandLabel \
+                  << "' on line " << token.lineNumber << std::endl;
+        return false;
+      }
+    }
 
     return true;
   }
@@ -136,7 +183,7 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
   std::vector<CodeData> processedData;
 
   //Track label addresses and pending labels
-  std::unordered_map<std::string, int> labelAddressMap = {{"NONE", 0}};
+  std::unordered_map<std::string, int> labelAddressMap;
 
   //Generate tokens and label address map
   if (!tokeniseCode(inputData, &processedData, &labelAddressMap)) {
@@ -153,43 +200,19 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
     return -1;
   }
 
+  //Convert labels and handle DAT to fill in operand data
+  if (!resolveOperands(&processedData, &labelAddressMap)) {
+    return -1;
+  }
+
   //Convert processed data into 'machine code'
-  for (unsigned int i = 0; i < processedData.size(); i++) {
+  int index = 0;
+  for (const auto& token : processedData) {
     //Convert mnemonic to an opcode
-    int opcode = instructions::mnemonicOpcodeMap.at(processedData[i].instruction);
-
-    //Convert labels to addresses and data
-    int operand = 0;
-    if (labelAddressMap.contains(processedData[i].operandLabel)) {
-      operand = labelAddressMap[processedData[i].operandLabel];
-    } else if (processedData[i].instruction == "DAT") {
-      //DAT can have a label or data as an operand
-      try {
-        processedData[i].operandData = std::stoi(processedData[i].operandLabel);
-        processedData[i].operandLabel = "NONE";
-      } catch (...) {
-        std::cerr << "ERROR: Operand '" << processedData[i].operandLabel \
-                  << "' isn't a label or numerical on line " \
-                  << processedData[i].lineNumber << std::endl;
-        return -1;
-      }
-    } else {
-      std::cerr << "ERROR: Undefined label '" << processedData[i].operandLabel \
-                << "' on line " << processedData[i].lineNumber << std::endl;
-      return -1;
-    }
-
-    //Check operand is 3 digits or less
-    int operandData = processedData[i].operandData;
-    if (operandData > 999 or operandData < -999) {
-      std::cerr << "ERROR: Operand '" << operandData \
-                << "' must be between 999 and -999 on line " \
-                << processedData[i].lineNumber << std::endl;
-      return -1;
-    }
+    int opcode = instructions::mnemonicOpcodeMap.at(token.instruction);
 
     //Write the result to memory
-    systemState->memoryPtr[i] = opcode + operand + processedData[i].operandData;
+    systemState->memoryPtr[index++] = opcode + token.operandData;
   }
 
   return programLength;
