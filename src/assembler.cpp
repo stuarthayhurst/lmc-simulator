@@ -183,7 +183,8 @@ int assembleProgram(SystemState* systemState, std::vector<std::string>* inputDat
     int operandData = processedData[i].operandData;
     if (operandData > 999 or operandData < -999) {
       std::cerr << "ERROR: Operand '" << operandData \
-                << "' must be between 999 and -999 on line " << i + 1 << std::endl;
+                << "' must be between 999 and -999 on line " \
+                << processedData[i].lineNumber << std::endl;
       return -1;
     }
 
