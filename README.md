@@ -23,12 +23,14 @@
     - `DEBUG="true" ./simulator [FILE]`
 
 ## Sample programs:
-  - Some sample programs are kept in `programs/`
+  - In order of complexity, some sample programs are kept in `programs/`:
     - `multiply.asm`: Multiply 2 inputs together
     - `modulus.asm`: Carry out modular division between 2 inputs
     - `power.asm`: Raise the first input to the power of the second
+    - `triangular.asm`: Output the first `n` triangular numbers
     - `fibonacci.asm`: Output the first `n` terms of the Fibonacci sequence
     - `iteration.asm`: Iterate over a group of addresses
+    - `quine.asm`: Iterate over the program's instructions to print its own code
     - `binary.asm`: Convert an integer from input into 8-bit binary
     - `leapyear.asm`: Check if a year from 1 to 999 was a leap year
 
