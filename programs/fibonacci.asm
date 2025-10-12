@@ -1,6 +1,8 @@
 	INP
 	SUB one
 	STA count
+	ADD one
+	BRZ end
 
 start	LDA x
 	ADD y
@@ -14,7 +16,7 @@ start	LDA x
 	SUB one
 	STA count
 	BRP start
-	HLT
+end	HLT
 
 #Use -1 and 0 as first 2 values, so 0 is the next
 x	DAT -1
