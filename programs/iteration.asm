@@ -1,6 +1,8 @@
 	INP
 	SUB one
 	STA count
+	ADD one
+	BRZ end
 
 loop	LDA data
 	OUT
@@ -11,6 +13,7 @@ loop	LDA data
 	SUB one
 	STA count
 	BRP loop
+end	HLT
 
 count	DAT 0
 one	DAT 1
