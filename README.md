@@ -10,6 +10,7 @@
   - `make`: Builds the simulator
     - Supports multiple threads with `-j[THREAD COUNT]`
     - Use `make -j$(nproc)` to build with all available threads
+  - `make debug`: Builds the simulator with `DEBUG=true`
   - `make clean`: Removes the compiled simulator, if present
   - `DEBUG=[true/false]`: Environment variable to enable debug support
     - Includes debug symbols, retains the frame pointer and uses sanitisers

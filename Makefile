@@ -16,7 +16,9 @@ $(BUILD_DIR)/%.o: ./src/%.cpp $(HEADERS)
 	@mkdir -p "$$(dirname $@)"
 	$(CXX) $< -c $(CXXFLAGS) -o "$@"
 
-.PHONY: clean
+.PHONY: debug clean
+debug:
+	DEBUG="true" $(MAKE) simulator
 clean:
 	@rm -fv simulator
 	@rm -rfv "$(BUILD_DIR)"
