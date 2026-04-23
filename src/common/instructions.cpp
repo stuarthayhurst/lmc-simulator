@@ -92,7 +92,12 @@ namespace instructions {
 
   const std::unordered_map<std::string, int> mnemonicOpcodeMap = {
     {"DAT", 000},
+
+    //Accept HLT, STP or COB to stop the program
     {"HLT", 000},
+    {"STP", 000},
+    {"COB", 000},
+
     {"ADD", 100},
     {"SUB", 200},
     {"STA", 300},
@@ -106,7 +111,12 @@ namespace instructions {
 
   const std::unordered_map<std::string, bool> mnemonicOperandMap = {
     {"DAT", true},
+
+    //Accept HLT, STP or COB to stop the program
     {"HLT", false},
+    {"STP", false},
+    {"COB", false},
+
     {"ADD", true},
     {"SUB", true},
     {"STA", true},
