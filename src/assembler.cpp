@@ -118,9 +118,14 @@ namespace {
       if (instructions::mnemonicOperandMap.at(lineVector[0])) {
         //Requires an operand, none found
         if (!operandPresent) {
-          std::cerr << "ERROR: Missing operand for instruction '" << lineVector[0] \
-                    << "' on line " << i + 1 << std::endl;
-          return false;
+          if (lineVector[0] == "DAT") {
+            //Default to 0 for DAT
+            lineVector.push_back("0");
+          } else {
+            std::cerr << "ERROR: Missing operand for instruction '" << lineVector[0] \
+                      << "' on line " << i + 1 << std::endl;
+            return false;
+          }
         }
 
         (*tokens)[lineAddress].operandLabel = lineVector[1];

@@ -110,6 +110,7 @@ namespace instructions {
   };
 
   const std::unordered_map<std::string, bool> mnemonicOperandMap = {
+    //DAT's operand will default to 0 if missing, but still needs checking for
     {"DAT", true},
 
     //Accept HLT, STP or COB to stop the program
