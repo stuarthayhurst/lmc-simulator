@@ -10,7 +10,7 @@ namespace {
   struct CodeData {
     int lineNumber;
     std::string instruction;
-    std::string operandLabel;
+    std::string operandLabel = "";
     int operandData = 0;
   };
 }
@@ -150,10 +150,9 @@ namespace {
   */
   static bool resolveOperands(std::vector<CodeData>* tokens,
                               std::unordered_map<std::string, int>* labelAddressMap) {
-    //Verify operand limits and handle DAT
+    //Verify operand limits and convert numerical 'labels' into data
     for (auto& token : *tokens) {
-      if (token.instruction == "DAT") {
-        //DAT can have a label or data as an operand, handle data
+      if (token.operandLabel != "") {
         if (!labelAddressMap->contains(token.operandLabel)) {
           try {
             token.operandData = std::stoi(token.operandLabel);
