@@ -13,6 +13,11 @@ int main(int argc, char* argv[]) {
   int memoryLength = 100;
   if (argc >= 3) {
     memoryLength = std::strtol(argv[2], nullptr, 10);
+    if (memoryLength <= 0) {
+      std::cerr << "ERROR: Memory size must be greater than 0 (0 > " << memoryLength \
+                << ")" << std::endl;
+      return EXIT_FAILURE;
+    }
   }
 
   //Setup simulator with configured number of memory addresses
