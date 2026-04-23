@@ -91,7 +91,13 @@ namespace {
 
       //Fill in pending labels
       for (unsigned int labelIndex = 0; labelIndex < pendingLabels.size(); labelIndex++) {
-        (*labelAddressMap)[pendingLabels[labelIndex]] = lineAddress;
+        const std::string& pendingLabelName = pendingLabels[labelIndex];
+        if (labelAddressMap->contains(pendingLabelName)) {
+          std::cerr << "WARNING: Label '" << pendingLabelName \
+                    << "' defined multiple times" << std::endl;
+        }
+
+        (*labelAddressMap)[pendingLabelName] = lineAddress;
       }
       pendingLabels.clear();
 
