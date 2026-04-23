@@ -29,9 +29,17 @@ namespace {
         lastCharacterWasSpace = true;
       } else {
         if (lastCharacterWasSpace) {
+          //Ignore comments
           if (lineText[letterIndex] == '#') {
             break;
+          } else if (lineText[letterIndex] == '/') {
+            if (stringLength - 1 >= letterIndex + 1) {
+              if (lineText[letterIndex + 1] == '/') {
+                break;
+              }
+            }
           }
+
           tokenIndex++;
           codeVector.push_back(std::string(""));
           lastCharacterWasSpace = false;

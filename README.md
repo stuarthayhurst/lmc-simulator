@@ -1,6 +1,6 @@
 ## lmc-simulator
   - Assemble and execute assembly of the [Little Man Computer](https://en.wikipedia.org/wiki/Little_Man_Computer) instruction set
-  - Additionally supports comments starting with '`#`'
+  - Additionally supports comments starting with '`#`' or '`//`'
 
 ## Requirements:
   - A compiler supporting `c++-20`
