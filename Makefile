@@ -7,7 +7,7 @@ endif
 
 OBJECTS := $(wildcard ./src/*.cpp) $(wildcard ./src/*/*.cpp)
 OBJECTS := $(subst .cpp,.o,$(subst ./src/,$(BUILD_DIR)/,$(OBJECTS)))
-HEADERS = $(wildcard ./src/*.hpp) $(wildcard ./src/*/*.hpp)
+HEADERS := $(wildcard ./src/*.hpp) $(wildcard ./src/*/*.hpp)
 
 simulator: $(OBJECTS) $(HEADERS)
 	$(CXX) -o "simulator" $(OBJECTS) $(CXXFLAGS)
